@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "QR Right-Click",
+    "description": "Extension name (English)"
+  },
+  "extDesc": {
+    "message": "Right-click any QR code to open its link instantly. 100% offline decoding — nothing is uploaded. Works on image, canvas and background-image QR codes.",
+    "description": "Extension description (English)"
+  }
+}

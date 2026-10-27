@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "极简右键扫码打开",
+  "name": "__MSG_extName__",
+  "description": "__MSG_extDesc__",
   "version": "1.1",
-  "description": "右键识别二维码，链接直接打开",
+  "default_locale": "zh_CN",
   "permissions": ["contextMenus", "scripting", "activeTab"],
   "host_permissions": ["<all_urls>"],
   "background": {

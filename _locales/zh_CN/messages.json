@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "极简右键扫码打开",
+    "description": "Extension name (Chinese)"
+  },
+  "extDesc": {
+    "message": "右键一下，二维码秒变链接。本地离线解码不上传，支持图片/Canvas/背景图二维码，链接直接新开标签。",
+    "description": "Extension description (Chinese)"
+  }
+}
