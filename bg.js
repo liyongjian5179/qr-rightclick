@@ -92,30 +92,33 @@ async function decodeInSw(dataUrl, clickX, clickY) {
   }
   if (!qr) return { ok: false, msg: "未识别到二维码（请确保二维码完整可见）" };
 
-  // 多码场景：jsQR 只返回找到的第一个码，若它离右键点较远，
-  // 对其周边区域遮罩后重扫，取离右键点最近的码
-  let best = qr;
-  let bestDist = distTo(qr.location, cx, cy);
-  let attempt = 0;
-  while (attempt < 4) {
-    if (bestDist < 40) break; // 已经足够近（模块级误差）
-    // 注意：jsQR 的 location 四角是内部估计值，比实际码边界小，
-    // 遮罩需按码边长的 15% 外扩才能完全盖住（pad 小了残缺定位环仍可解）
-    const side = Math.max(
-      Math.abs(best.location.topRightCorner.x - best.location.topLeftCorner.x),
-      Math.abs(best.location.bottomLeftCorner.y - best.location.topLeftCorner.y)
-    );
-    maskRegion(idata, best.location, Math.max(8, Math.round(side * 0.15)));
-    const next = jsQR(idata.data, w, h);
-    if (!next) break; // 没有别的码了
-    const d = distTo(next.location, cx, cy);
-    if (d < bestDist) {
-      best = next;
-      bestDist = d;
-    } else {
-      break; // 新找到的码更远，保留当前结果
+  // 多码场景：收集屏幕上所有码（遮罩重扫逐个剔除，上限 5 个），
+  // 再从中选离右键点最近的——不依赖首轮坐标的精确性
+  const found = [qr];
+  {
+    let cur = qr;
+    for (let i = 0; i < 4; i++) {
+      // jsQR 的 location 四角是内部估计值，比实际码边界小，
+      // 遮罩需按码边长的 15% 外扩才能完全盖住（pad 小了残缺定位环仍可解）
+      const side = Math.max(
+        Math.abs(cur.location.topRightCorner.x - cur.location.topLeftCorner.x),
+        Math.abs(cur.location.bottomLeftCorner.y - cur.location.topLeftCorner.y)
+      );
+      maskRegion(idata, cur.location, Math.max(8, Math.round(side * 0.15)));
+      const next = jsQR(idata.data, w, h);
+      if (!next) break; // 没有别的码了
+      found.push(next);
+      cur = next;
     }
-    attempt++;
+  }
+  // 右键坐标无效（0,0 兜底）或只有一个码：取第一个
+  if (found.length === 1 || (cx <= 0 && cy <= 0)) {
+    return { ok: true, data: found[0].data.trim() };
+  }
+  let best = found[0], bestDist = Infinity;
+  for (const c of found) {
+    const d = distTo(c.location, cx, cy);
+    if (d < bestDist) { best = c; bestDist = d; }
   }
   return { ok: true, data: best.data.trim() };
 }
