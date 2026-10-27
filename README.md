@@ -58,8 +58,10 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 采用**截屏解码**（同类插件通用做法）：
 
 ```
-右键 → captureVisibleTab 截屏 → Service Worker 内 jsQR 解码 → 分流处理
+右键 → 记录点击位置 → captureVisibleTab 截屏 → 只解码右键处的码 → 分流处理
 ```
+
+页面上有多个二维码挨在一起时，只识别你右键的那一个。
 
 不访问页面 DOM 元素，天然绕开传统方案的所有限制：
 
@@ -99,7 +101,8 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 ```
 qr-rightclick/
 ├─ manifest.json      # MV3 清单
-├─ bg.js              # Service Worker（全部逻辑 ~100 行）
+├─ bg.js              # Service Worker：截屏、解码、打开链接
+├─ content.js         # 记录右键位置（用于多码场景定位）
 ├─ jsQR.min.js        # 二维码解码库（MIT）
 └─ icons/             # 扩展图标（4 尺寸）
 ```

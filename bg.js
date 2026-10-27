@@ -10,36 +10,14 @@ chrome.contextMenus.removeAll(() => {
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   try {
-    // 截取当前可见页面解码（同类插件通用做法）：
-    // 不访问页面元素，天然绕开跨域防盗图 / Shadow DOM / CSS 背景图等所有限制
+    // 截取当前可见页面解码：不读页面元素像素，绕开跨域 / Shadow DOM / 背景图等限制
     const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
-
-    // 目标码定位：优先用右键图片元素的真实位置（info.srcUrl 定位 img，
-    // getBoundingClientRect 取视口坐标，无任何换算误差）；
-    // 非图片元素时回退 info.x/y × devicePixelRatio
-    let px, py;
-    const [pos] = await chrome.scripting.executeScript({
+    // 右键位置由 content.js 记录（info 不含坐标）；页面在扩展安装前打开的话取不到，为 null
+    const [got] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      func: (srcUrl, x, y) => {
-        if (srcUrl) {
-          const imgs = [...document.images];
-          const img = imgs.find((el) => el.src === srcUrl || el.currentSrc === srcUrl);
-          if (img) {
-            const r = img.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            // 中心点：视口 CSS 坐标 × DPR = 截图像素坐标
-            return { x: (r.left + r.width / 2) * dpr, y: (r.top + r.height / 2) * dpr };
-          }
-        }
-        const dpr = window.devicePixelRatio || 1;
-        return { x: x * dpr, y: y * dpr };
-      },
-      args: [info.srcUrl, info.x, info.y]
+      func: () => window.__qrCtx || null
     });
-    px = pos?.result?.x || 0;
-    py = pos?.result?.y || 0;
-
-    const res = await decodeInSw(dataUrl, px, py);
+    const res = await decodeInSw(dataUrl, got && got.result);
 
     if (!res.ok) {
       notify(tab.id, res.msg);
@@ -68,124 +46,105 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 });
 
 // 全程在 SW 内解码：importScripts 加载的 jsQR 只在 SW 作用域可见
-// clickX/clickY：右键位置在截图中的像素坐标，用于多码场景就近选择
-async function decodeInSw(dataUrl, clickX, clickY) {
-  const blob = await (await fetch(dataUrl)).blob();
-  const bmp = await createImageBitmap(blob);
+async function decodeInSw(dataUrl, ctx) {
+  const bmp = await createImageBitmap(await (await fetch(dataUrl)).blob());
 
-  // 截图是设备像素（retina 为 2x），过大时等比缩小控制解码耗时
-  const MAX = 2400;
-  const scale = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
-  const w = Math.round(bmp.width * scale);
-  const h = Math.round(bmp.height * scale);
-  // 右键坐标随截图同比例缩放
-  const cx = (clickX || 0) * scale;
-  const cy = (clickY || 0) * scale;
+  if (ctx) {
+    // 截图像素 / 视口 CSS 像素，DPR 和页面缩放都已包含在内
+    const k = bmp.width / ctx.vw;
+    // 1) 只解右键位置附近：图像元素用其边界（外扩 8%），否则取点击点周围 480px 方块
+    const r = ctx.rect
+      ? pad(ctx.rect, 0.08)
+      : { x: ctx.x - 240, y: ctx.y - 240, w: 480, h: 480 };
+    const qr = decodeRegion(bmp, r.x * k, r.y * k, r.w * k, r.h * k);
+    if (qr) return { ok: true, data: qr.data.trim() };
+  }
 
-  const c = new OffscreenCanvas(w, h);
-  const ctx = c.getContext("2d");
-  ctx.drawImage(bmp, 0, 0, w, h);
-  const idata = ctx.getImageData(0, 0, w, h);
-
-  // 多尺度解码：小码（渲染尺寸小/模块密）在缩小的图上反而更易识别，
-  // 单一尺度漏检时按 0.75 / 0.55 逐级重试
-  let qr = jsQR(idata.data, w, h);
-  if (!qr) {
-    for (const f of [0.75, 0.55]) {
-      const sw = Math.round(w * f), sh = Math.round(h * f);
-      const sc = new OffscreenCanvas(sw, sh);
-      const sctx = sc.getContext("2d");
-      sctx.imageSmoothingEnabled = true;
-      sctx.drawImage(bmp, 0, 0, sw, sh);
-      const sd = sctx.getImageData(0, 0, sw, sh);
-      qr = jsQR(sd.data, sw, sh);
-      if (qr) {
-        // location 坐标除以 f 回到主尺度坐标系
-        for (const k of ["topLeftCorner", "topRightCorner", "bottomLeftCorner", "bottomRightCorner"]) {
-          qr.location[k].x /= f;
-          qr.location[k].y /= f;
-        }
-        break;
-      }
-    }
-  }
-  if (!qr) return { ok: false, msg: "未识别到二维码（请确保二维码完整可见）" };
-
-  // 多码场景：收集屏幕上所有码（遮罩重扫逐个剔除，上限 5 个），
-  // 再从中选离右键点最近的——不依赖首轮坐标的精确性
-  const found = [qr];
-  {
-    let cur = qr;
-    for (let i = 0; i < 4; i++) {
-      // jsQR 的 location 四角是内部估计值，比实际码边界小，
-      // 遮罩需按码边长的 15% 外扩才能完全盖住（pad 小了残缺定位环仍可解）
-      const side = Math.max(
-        Math.abs(cur.location.topRightCorner.x - cur.location.topLeftCorner.x),
-        Math.abs(cur.location.bottomLeftCorner.y - cur.location.topLeftCorner.y)
-      );
-      maskRegion(idata, cur.location, Math.max(8, Math.round(side * 0.15)));
-      const next = jsQR(idata.data, w, h);
-      if (!next) break; // 没有别的码了
-      found.push(next);
-      cur = next;
-    }
-  }
-  // 右键坐标无效（0,0 兜底）或只有一个码：取第一个
-  if (found.length === 1 || (cx <= 0 && cy <= 0)) {
-    return { ok: true, data: found[0].data.trim() };
-  }
-  // 包含优先：右键点落在码的边界框内 → 直接确定目标
-  for (const c of found) {
-    const box = bbox(c.location);
-    // 边界框按 15% 放宽（jsQR location 偏小，实际码更大）
-    const bw = (box.maxX - box.minX) * 0.15, bh = (box.maxY - box.minY) * 0.15;
-    if (cx >= box.minX - bw && cx <= box.maxX + bw &&
-        cy >= box.minY - bh && cy <= box.maxY + bh) {
-      return { ok: true, data: c.data.trim() };
-    }
-  }
-  // 兜底：距离最近
+  // 2) 回退：全屏解码，多码时取离右键点最近的
+  const found = collectAll(bmp);
+  if (!found.length) return { ok: false, msg: "未识别到二维码（请确保二维码完整可见）" };
+  if (!ctx) return { ok: true, data: found[0].code.data.trim() };
+  const k = bmp.width / ctx.vw;
   let best = found[0], bestDist = Infinity;
-  for (const c of found) {
-    const d = distTo(c.location, cx, cy);
-    if (d < bestDist) { best = c; bestDist = d; }
+  for (const f of found) {
+    const d = distTo(f.code.location, (ctx.x * k) * f.s, (ctx.y * k) * f.s);
+    if (d < bestDist) { best = f; bestDist = d; }
   }
-  return { ok: true, data: best.data.trim() };
+  return { ok: true, data: best.code.data.trim() };
 }
 
-// 码的边界框
+function pad(r, ratio) {
+  const dx = r.w * ratio, dy = r.h * ratio;
+  return { x: r.x - dx, y: r.y - dy, w: r.w + dx * 2, h: r.h + dy * 2 };
+}
+
+// 解码截图中的一块区域；多尺度重试（小而密的码缩小后反而更易识别）
+function decodeRegion(bmp, x, y, w, h) {
+  const x0 = Math.max(0, Math.floor(x)), y0 = Math.max(0, Math.floor(y));
+  const x1 = Math.min(bmp.width, Math.ceil(x + w)), y1 = Math.min(bmp.height, Math.ceil(y + h));
+  const rw = x1 - x0, rh = y1 - y0;
+  if (rw < 20 || rh < 20) return null;
+  const base = Math.min(1, 1200 / Math.max(rw, rh)); // 过大区域先缩小控制耗时
+  for (const f of [1, 0.7, 0.5]) {
+    const s = base * f;
+    const cw = Math.max(1, Math.round(rw * s)), ch = Math.max(1, Math.round(rh * s));
+    const c = new OffscreenCanvas(cw, ch);
+    const cctx = c.getContext("2d");
+    cctx.drawImage(bmp, x0, y0, rw, rh, 0, 0, cw, ch);
+    const qr = jsQR(cctx.getImageData(0, 0, cw, ch).data, cw, ch);
+    if (qr) return qr;
+  }
+  return null;
+}
+
+// 全屏收集所有码：找到一个就涂白遮掉再重扫（上限 5 个）
+// 返回 { code, s }，s 为解码画布相对截图的缩放比，用于换算右键坐标
+function collectAll(bmp) {
+  const found = [];
+  for (const f of [1, 0.7, 0.5]) {
+    const s = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)) * f;
+    const w = Math.round(bmp.width * s), h = Math.round(bmp.height * s);
+    const c = new OffscreenCanvas(w, h);
+    const cctx = c.getContext("2d");
+    cctx.drawImage(bmp, 0, 0, w, h);
+    const idata = cctx.getImageData(0, 0, w, h);
+    let qr = jsQR(idata.data, w, h);
+    while (qr && found.length < 5) {
+      found.push({ code: qr, s });
+      // jsQR 的 location 是内部估计值，比实际码边界小，需按边长 15% 外扩才能盖住
+      const b = bbox(qr.location);
+      maskRegion(idata, b, Math.max(8, Math.round(Math.max(b.maxX - b.minX, b.maxY - b.minY) * 0.15)));
+      qr = jsQR(idata.data, w, h);
+    }
+    if (found.length) return found;
+  }
+  return found;
+}
+
 function bbox(loc) {
   const xs = [loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomLeftCorner.x, loc.bottomRightCorner.x];
   const ys = [loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomLeftCorner.y, loc.bottomRightCorner.y];
   return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
 }
 
-// 右键点到码 bounding box 的距离（在框内为 0）
+// 右键点到码边界框的距离（在框内为 0）
 function distTo(loc, cx, cy) {
-  const xs = [loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomLeftCorner.x, loc.bottomRightCorner.x];
-  const ys = [loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomLeftCorner.y, loc.bottomRightCorner.y];
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const dx = Math.max(minX - cx, 0, cx - maxX);
-  const dy = Math.max(minY - cy, 0, cy - maxY);
+  const b = bbox(loc);
+  const dx = Math.max(b.minX - cx, 0, cx - b.maxX);
+  const dy = Math.max(b.minY - cy, 0, cy - b.maxY);
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// 把某个码的区域涂白遮罩（ImageData 原地修改）
-function maskRegion(idata, loc, pad) {
-  const xs = [loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomLeftCorner.x, loc.bottomRightCorner.x];
-  const ys = [loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomLeftCorner.y, loc.bottomRightCorner.y];
-  const minX = Math.max(0, Math.floor(Math.min(...xs) - pad));
-  const maxX = Math.min(idata.width - 1, Math.ceil(Math.max(...xs) + pad));
-  const minY = Math.max(0, Math.floor(Math.min(...ys) - pad));
-  const maxY = Math.min(idata.height - 1, Math.ceil(Math.max(...ys) + pad));
-  for (let y = minY; y <= maxY; y++) {
-    for (let x = minX; x <= maxX; x++) {
+// 把边界框区域涂白（ImageData 原地修改）
+function maskRegion(idata, b, p) {
+  const x0 = Math.max(0, Math.floor(b.minX - p)), x1 = Math.min(idata.width - 1, Math.ceil(b.maxX + p));
+  const y0 = Math.max(0, Math.floor(b.minY - p)), y1 = Math.min(idata.height - 1, Math.ceil(b.maxY + p));
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
       const i = (y * idata.width + x) * 4;
-      idata.data[i] = idata.data[i + 1] = idata.data[i + 2] = 255; // 涂白（码背景色）
+      idata.data[i] = idata.data[i + 1] = idata.data[i + 2] = 255;
     }
   }
-  return idata;
 }
 
 // SW 环境没有 alert，把提示注入到页面里弹
