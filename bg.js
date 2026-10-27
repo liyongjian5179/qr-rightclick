@@ -67,7 +67,29 @@ async function decodeInSw(dataUrl, clickX, clickY) {
   const ctx = c.getContext("2d");
   ctx.drawImage(bmp, 0, 0, w, h);
   const idata = ctx.getImageData(0, 0, w, h);
-  const qr = jsQR(idata.data, w, h);
+
+  // 多尺度解码：小码（渲染尺寸小/模块密）在缩小的图上反而更易识别，
+  // 单一尺度漏检时按 0.75 / 0.55 逐级重试
+  let qr = jsQR(idata.data, w, h);
+  if (!qr) {
+    for (const f of [0.75, 0.55]) {
+      const sw = Math.round(w * f), sh = Math.round(h * f);
+      const sc = new OffscreenCanvas(sw, sh);
+      const sctx = sc.getContext("2d");
+      sctx.imageSmoothingEnabled = true;
+      sctx.drawImage(bmp, 0, 0, sw, sh);
+      const sd = sctx.getImageData(0, 0, sw, sh);
+      qr = jsQR(sd.data, sw, sh);
+      if (qr) {
+        // location 坐标除以 f 回到主尺度坐标系
+        for (const k of ["topLeftCorner", "topRightCorner", "bottomLeftCorner", "bottomRightCorner"]) {
+          qr.location[k].x /= f;
+          qr.location[k].y /= f;
+        }
+        break;
+      }
+    }
+  }
   if (!qr) return { ok: false, msg: "未识别到二维码（请确保二维码完整可见）" };
 
   // 多码场景：jsQR 只返回找到的第一个码，若它离右键点较远，
