@@ -90,7 +90,7 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 
 | 微信 | 支付宝 |
 |:---:|:---:|
-| ![微信收款码](donate/wechat.png) | ![支付宝收款码](donate/alipay.png) |
+| <img src="donate/wechat.png" width="220" alt="微信收款码"> | <img src="donate/alipay.png" width="220" alt="支付宝收款码"> |
 
 </div>
 
