@@ -13,13 +13,32 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     // 截取当前可见页面解码（同类插件通用做法）：
     // 不访问页面元素，天然绕开跨域防盗图 / Shadow DOM / CSS 背景图等所有限制
     const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
-    // 右键坐标（视口 CSS 像素）× 设备像素比 = 截图像素坐标，用于多码时就近选择
-    const [dpi] = await chrome.scripting.executeScript({
+
+    // 目标码定位：优先用右键图片元素的真实位置（info.srcUrl 定位 img，
+    // getBoundingClientRect 取视口坐标，无任何换算误差）；
+    // 非图片元素时回退 info.x/y × devicePixelRatio
+    let px, py;
+    const [pos] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      func: () => window.devicePixelRatio || 1
+      func: (srcUrl, x, y) => {
+        if (srcUrl) {
+          const imgs = [...document.images];
+          const img = imgs.find((el) => el.src === srcUrl || el.currentSrc === srcUrl);
+          if (img) {
+            const r = img.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            // 中心点：视口 CSS 坐标 × DPR = 截图像素坐标
+            return { x: (r.left + r.width / 2) * dpr, y: (r.top + r.height / 2) * dpr };
+          }
+        }
+        const dpr = window.devicePixelRatio || 1;
+        return { x: x * dpr, y: y * dpr };
+      },
+      args: [info.srcUrl, info.x, info.y]
     });
-    const px = info.x * (dpi?.result || 1);
-    const py = info.y * (dpi?.result || 1);
+    px = pos?.result?.x || 0;
+    py = pos?.result?.y || 0;
+
     const res = await decodeInSw(dataUrl, px, py);
 
     if (!res.ok) {
@@ -115,12 +134,30 @@ async function decodeInSw(dataUrl, clickX, clickY) {
   if (found.length === 1 || (cx <= 0 && cy <= 0)) {
     return { ok: true, data: found[0].data.trim() };
   }
+  // 包含优先：右键点落在码的边界框内 → 直接确定目标
+  for (const c of found) {
+    const box = bbox(c.location);
+    // 边界框按 15% 放宽（jsQR location 偏小，实际码更大）
+    const bw = (box.maxX - box.minX) * 0.15, bh = (box.maxY - box.minY) * 0.15;
+    if (cx >= box.minX - bw && cx <= box.maxX + bw &&
+        cy >= box.minY - bh && cy <= box.maxY + bh) {
+      return { ok: true, data: c.data.trim() };
+    }
+  }
+  // 兜底：距离最近
   let best = found[0], bestDist = Infinity;
   for (const c of found) {
     const d = distTo(c.location, cx, cy);
     if (d < bestDist) { best = c; bestDist = d; }
   }
   return { ok: true, data: best.data.trim() };
+}
+
+// 码的边界框
+function bbox(loc) {
+  const xs = [loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomLeftCorner.x, loc.bottomRightCorner.x];
+  const ys = [loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomLeftCorner.y, loc.bottomRightCorner.y];
+  return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
 }
 
 // 右键点到码 bounding box 的距离（在框内为 0）
