@@ -84,6 +84,10 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 
 如果这个扩展帮到了你，欢迎请作者喝杯咖啡 ☕
 
+**海外用户**：[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/liyongjian5179)
+
+**国内用户**：微信 / 支付宝扫码
+
 **试试用这个扩展扫一扫下面的收款码** —— 毕竟它就是干这个的 😄
 
 <div align="center">

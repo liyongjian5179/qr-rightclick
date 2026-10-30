@@ -31,13 +31,13 @@
     "message": "支付宝",
     "description": "Alipay label"
   },
-  "popupCreem": {
-    "message": "赞赏支持",
-    "description": "Creem donate button"
+  "popupDonateIntl": {
+    "message": "在 Ko-fi 上支持",
+    "description": "Overseas donate button (Ko-fi)"
   },
   "donateRegion": {
     "message": "cn",
-    "description": "Donate method for this locale: cn = WeChat/Alipay, intl = Creem. Not shown to users."
+    "description": "Donate method for this locale: cn = WeChat/Alipay, intl = Ko-fi. Not shown to users."
   },
   "popupCopied": {
     "message": "已复制：",
