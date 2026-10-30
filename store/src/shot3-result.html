@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<script src="vendor/qrcode.min.js"></script><script src="common.js"></script>
+<style>
+  .cards { display: flex; flex-direction: column; gap: 22px; width: 680px; }
+  .row { display: flex; align-items: center; gap: 22px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; box-shadow: 0 10px 30px rgba(34,51,68,.08); }
+  .row .qr { width: 120px; height: 120px; flex: none; }
+  .arrow { font-size: 30px; color: var(--muted); }
+  .out { flex: 1; }
+  .out .k { font-size: 13px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .out .v { font-size: 18px; font-weight: 600; word-break: break-all; }
+  .pill { display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px; background: #eaffd0; color: #2f5a00; font-size: 13px; font-weight: 600; }
+  .toast { margin-top: 10px; display: inline-block; padding: 8px 12px; border-radius: 8px; background: var(--ink); color: #fff; font-size: 14px; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="copy">
+    <div class="brand"><img src="icon128.png" alt="">QR Right-Click</div>
+    <h1>Links open.<br><em>Text copies.</em></h1>
+    <p>Web links open in a new tab right away. Anything else, like Wi-Fi details or a coupon code, goes to your clipboard.</p>
+  </div>
+  <div class="stage">
+    <div class="cards">
+      <div class="row">
+        <div class="qr" data-qr="https://example.com/menu"></div>
+        <div class="arrow">→</div>
+        <div class="out"><div class="k">Link</div><div class="v">https://example.com/menu</div><span class="pill">Opened in a new tab</span></div>
+      </div>
+      <div class="row">
+        <div class="qr" data-qr="WIFI:T:WPA;S:CafeGuest;P:latte2026;;"></div>
+        <div class="arrow">→</div>
+        <div class="out"><div class="k">Text</div><div class="v">WIFI:T:WPA;S:CafeGuest;P:latte2026;;</div><span class="toast">Copied: WIFI:T:WPA;S:CafeGuest…</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

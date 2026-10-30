@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<script src="vendor/qrcode.min.js"></script><script src="common.js"></script>
+<style>
+  .pair { display: flex; gap: 22px; }
+  .pair .qr { width: 180px; height: 180px; }
+  .tag { position: absolute; padding: 8px 14px; border-radius: 8px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 8px 20px rgba(34,51,68,.2); }
+  .tag b { color: var(--lime); }
+</style>
+</head><body>
+<div class="slide">
+  <div class="copy">
+    <div class="brand"><img src="icon128.png" alt="">QR Right-Click</div>
+    <h1>Several codes?<br><em>Gets the right one.</em></h1>
+    <p>When QR codes sit side by side, only the one under your cursor is decoded. The others are ignored.</p>
+  </div>
+  <div class="stage">
+    <div class="browser">
+      <div class="chrome-bar"><i></i><i></i><i></i><div class="url">example.com/download</div><img class="ext" src="icon128.png" alt=""></div>
+      <div class="page">
+        <h2>Get the app</h2>
+        <p class="sub">Choose your platform.</p>
+        <div class="pair">
+          <div class="qr-card dim"><div class="qr" data-qr="https://example.com/ios"></div><div class="cap">iOS</div></div>
+          <div class="qr-card hl"><div class="qr" data-qr="https://example.com/android"></div><div class="cap">Android</div></div>
+          <div class="qr-card dim"><div class="qr" data-qr="https://example.com/desktop"></div><div class="cap">Desktop</div></div>
+        </div>
+      </div>
+      <div class="cursor" style="left:356px;top:262px"></div>
+      <div class="tag" style="left:262px;top:470px">✓ Decoded: <b>example.com/android</b></div>
+    </div>
+  </div>
+</div>
+</body></html>

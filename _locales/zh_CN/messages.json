@@ -46,5 +46,21 @@
   "popupResult": {
     "message": "识别结果：",
     "description": "Popup scan result prefix"
+  },
+  "errNotFound": {
+    "message": "未识别到二维码",
+    "description": "Error shown to the user"
+  },
+  "errNotFoundVisible": {
+    "message": "未识别到二维码（请确保二维码完整可见）",
+    "description": "Error shown to the user"
+  },
+  "errMultiple": {
+    "message": "页面上有多个二维码，无法判断你右键的是哪个，请刷新页面后重试",
+    "description": "Error shown to the user"
+  },
+  "errFailed": {
+    "message": "识别失败：",
+    "description": "Error shown to the user"
   }
 }

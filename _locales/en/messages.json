@@ -46,5 +46,21 @@
   "popupResult": {
     "message": "Result: ",
     "description": "Popup scan result prefix"
+  },
+  "errNotFound": {
+    "message": "No QR code found",
+    "description": "Error shown to the user"
+  },
+  "errNotFoundVisible": {
+    "message": "No QR code found. Make sure the whole code is visible on screen.",
+    "description": "Error shown to the user"
+  },
+  "errMultiple": {
+    "message": "Several QR codes are on this page and the one you clicked can’t be determined. Refresh the page and try again.",
+    "description": "Error shown to the user"
+  },
+  "errFailed": {
+    "message": "Scan failed: ",
+    "description": "Error shown to the user"
   }
 }

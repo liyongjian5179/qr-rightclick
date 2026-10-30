@@ -1,0 +1,83 @@
+/* 商店素材公用样式：配色取自扩展图标（深蓝 #223344、浅蓝 #99ddff、荧光绿 #bbff66） */
+:root {
+  --ink: #223344;
+  --sky: #99ddff;
+  --lime: #bbff66;
+  --paper: #f5f8fb;
+  --line: #d6dee6;
+  --muted: #5d6b78;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  width: 1280px;
+  height: 800px;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+}
+
+/* 左侧文案 + 右侧浏览器的通用版式 */
+.slide { display: flex; height: 100%; }
+.copy {
+  width: 430px;
+  padding: 0 40px 0 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--ink);
+  color: #fff;
+}
+.copy .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 44px; font-weight: 600; font-size: 18px; opacity: .9; }
+.copy .brand img { width: 40px; height: 40px; border-radius: 9px; }
+.copy h1 { margin: 0 0 18px; font-size: 44px; line-height: 1.15; letter-spacing: -0.5px; }
+.copy h1 em { font-style: normal; color: var(--lime); }
+.copy p { margin: 0; font-size: 19px; line-height: 1.55; color: #c8d6e3; }
+.stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+
+/* 模拟浏览器窗口 */
+.browser {
+  width: 760px;
+  height: 600px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(34, 51, 68, .18), 0 2px 6px rgba(34, 51, 68, .08);
+  overflow: hidden;
+  position: relative;
+}
+.chrome-bar { height: 44px; background: #eef2f6; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid var(--line); }
+.chrome-bar i { width: 12px; height: 12px; border-radius: 50%; background: #d3dae1; }
+.chrome-bar .url { margin-left: 12px; flex: 1; height: 26px; border-radius: 13px; background: #fff; color: var(--muted); font-size: 13px; display: flex; align-items: center; padding: 0 14px; }
+.chrome-bar .ext { width: 26px; height: 26px; border-radius: 6px; }
+.page { padding: 36px 44px; }
+.page h2 { margin: 0 0 6px; font-size: 24px; }
+.page .sub { margin: 0 0 26px; color: var(--muted); font-size: 15px; }
+.skeleton { height: 12px; border-radius: 6px; background: #e8edf2; margin-bottom: 10px; }
+
+/* 二维码卡片 */
+.qr-card { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.qr-card .cap { font-size: 14px; color: var(--muted); }
+.qr { width: 200px; height: 200px; }
+.qr img, .qr canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+.hl { outline: 3px solid var(--lime); outline-offset: 4px; border-radius: 14px; }
+.dim { opacity: .35; }
+
+/* 右键菜单 */
+.menu {
+  position: absolute;
+  width: 270px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(34, 51, 68, .18);
+  padding: 6px 0;
+  font-size: 14px;
+}
+.menu div { padding: 7px 16px; color: #333; }
+.menu hr { border: 0; border-top: 1px solid #eceff2; margin: 5px 0; }
+.menu .on { background: #e9f6ff; color: var(--ink); font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.menu .on img { width: 18px; height: 18px; border-radius: 4px; }
+
+/* 鼠标指针 */
+.cursor { position: absolute; width: 26px; height: 26px; }

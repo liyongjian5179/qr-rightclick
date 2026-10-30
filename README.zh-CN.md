@@ -81,6 +81,7 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 - 唯一的网络请求：右键图片时重新获取这张图片本身（通常直接命中浏览器缓存），不会发往其他地址
 - 不收集、不存储任何页面内容；无统计、无埋点
 - `<all_urls>` 权限仅用于截屏和取图解码
+- 完整隐私政策：[PRIVACY.md](PRIVACY.md)
 
 ## ☕ 请作者喝杯咖啡
 
@@ -110,7 +111,8 @@ qr-rightclick/
 ├─ popup.*            # 工具栏弹窗：使用说明 + 赞赏
 ├─ donate/            # 收款码（弹窗与 README 共用）
 ├─ jsQR.min.js        # 二维码解码库（MIT）
-├─ _locales/          # 中英文扩展名与描述
+├─ _locales/          # 中英文文案
+├─ store/             # 商店上架资料、截图素材、打包脚本
 └─ icons/             # 扩展图标（4 尺寸）
 ```
 

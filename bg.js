@@ -16,7 +16,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
     // 2) 不是图片（canvas / 背景图等）或图片取不到：截屏，按右键位置裁剪解码
     // 截屏需要真实标签页；在扩展弹窗里右键时 tab 为 undefined
-    if (!res && !tab) res = { ok: false, msg: "未识别到二维码" };
+    if (!res && !tab) res = { ok: false, msg: chrome.i18n.getMessage("errNotFound") };
     if (!res) {
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
       // 右键位置由 content.js 记录（info 不含坐标）；扩展装好前就打开的页面取不到，为 null
@@ -41,7 +41,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
   } catch (e) {
     console.error(e);
-    await notify(tab, `识别失败：${e && e.message ? e.message : e}`);
+    await notify(tab, chrome.i18n.getMessage("errFailed") + (e && e.message ? e.message : e));
   }
 });
 
@@ -79,10 +79,10 @@ async function decodeInSw(dataUrl, ctx) {
 
   // 2) 回退：全屏解码，多码时取离右键点最近的
   const found = collectAll(bmp);
-  if (!found.length) return { ok: false, msg: "未识别到二维码（请确保二维码完整可见）" };
+  if (!found.length) return { ok: false, msg: chrome.i18n.getMessage("errNotFoundVisible") };
   if (!ctx) {
     // 不知道右键位置时不能随便挑一个，多码直接报错
-    if (found.length > 1) return { ok: false, msg: "页面上有多个二维码，无法判断你右键的是哪个，请刷新页面后重试" };
+    if (found.length > 1) return { ok: false, msg: chrome.i18n.getMessage("errMultiple") };
     return { ok: true, data: found[0].code.data.trim() };
   }
   const k = bmp.width / ctx.vw;
@@ -180,14 +180,14 @@ async function notify(tab, text, copy = false) {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (t, c) => {
+        func: (t, c, copied, result) => {
           if (!c) return alert(t);
           navigator.clipboard.writeText(t).then(
-            () => alert(`内容已复制：${t}`),
-            () => alert(`识别结果：${t}`)
+            () => alert(copied + t),
+            () => alert(result + t)
           );
         },
-        args: [text, copy]
+        args: [text, copy, chrome.i18n.getMessage("popupCopied"), chrome.i18n.getMessage("popupResult")]
       });
       return;
     } catch (e) {

@@ -81,6 +81,7 @@ Right-click image ──→ fetch the image itself ──→ jsQR decode ──�
 - The only network request: when you right-click an image, the extension fetches that same image again (usually served from the browser cache). Nothing is sent anywhere else
 - No page content is collected or stored. No analytics, no tracking
 - The `<all_urls>` permission is used only to take screenshots and fetch images for decoding
+- Full policy: [PRIVACY.md](PRIVACY.md)
 
 ## ☕ Buy me a coffee
 
@@ -101,6 +102,7 @@ qr-rightclick/
 ├─ donate/            # Payment QR codes (shared by the popup and README)
 ├─ jsQR.min.js        # QR decoding library (MIT)
 ├─ _locales/          # English and Chinese strings
+├─ store/             # Chrome Web Store listing, screenshots, packaging script
 └─ icons/             # Extension icons (4 sizes)
 ```
 

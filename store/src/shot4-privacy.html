@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<script src="vendor/qrcode.min.js"></script><script src="common.js"></script>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 720px; }
+  .cell { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px 26px 24px; box-shadow: 0 10px 30px rgba(34,51,68,.06); }
+  .cell .ic { width: 44px; height: 44px; border-radius: 12px; background: #e9f6ff; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
+  .cell h3 { margin: 0 0 6px; font-size: 19px; }
+  .cell p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="copy">
+    <div class="brand"><img src="icon128.png" alt="">QR Right-Click</div>
+    <h1>Private<br><em>by design.</em></h1>
+    <p>Everything is decoded on your computer. Nothing is uploaded, nothing is tracked.</p>
+  </div>
+  <div class="stage">
+    <div class="grid">
+      <div class="cell"><div class="ic">🔒</div><h3>100% local decoding</h3><p>QR codes are read on your device with the open-source jsQR library.</p></div>
+      <div class="cell"><div class="ic">🚫</div><h3>No tracking</h3><p>No analytics, no ads, no accounts. Page content is never read or sent.</p></div>
+      <div class="cell"><div class="ic">🧩</div><h3>Works on any QR</h3><p>Images, canvas pop-ups, CSS backgrounds, and Shadow DOM.</p></div>
+      <div class="cell"><div class="ic">🌐</div><h3>English &amp; 中文</h3><p>Follows your browser language, with a one-click switch in the popup.</p></div>
+    </div>
+  </div>
+</div>
+</body></html>

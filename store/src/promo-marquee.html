@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1400px; height: 560px; background: var(--ink); color: #fff; }
+  .wrap { height: 100%; display: flex; align-items: center; justify-content: center; gap: 56px; position: relative; overflow: hidden; }
+  .wrap img { width: 220px; height: 220px; border-radius: 46px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  h1 { margin: 0 0 14px; font-size: 72px; letter-spacing: -1px; }
+  p { margin: 0; color: #c8d6e3; font-size: 30px; line-height: 1.4; }
+  p b { color: var(--lime); }
+  .glow { position: absolute; right: -120px; bottom: -200px; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(187,255,102,.18), transparent 70%); }
+  .glow2 { position: absolute; left: -160px; top: -220px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(153,221,255,.16), transparent 70%); }
+</style>
+</head><body>
+<div class="wrap">
+  <div class="glow"></div><div class="glow2"></div>
+  <img src="icon128.png" alt="">
+  <div>
+    <h1>QR Right-Click</h1>
+    <p>Right-click any QR code to <b>open it instantly</b>.<br>Decoded on your device. Nothing uploaded.</p>
+  </div>
+</div>
+</body></html>
