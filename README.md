@@ -1,129 +1,121 @@
 <div align="center">
 
-# 🖱️ 极简右键扫码
+# 🖱️ QR Right-Click
 
-**右键一下，二维码直接打开**
+**Right-click any QR code to open it**
+
+English | [简体中文](README.zh-CN.md)
 
 [![Chrome](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate)
-[![jsQR](https://img.shields.io/badge/解码-jsQR%201.4.0-000000?style=flat-square)](https://github.com/cozmo/jsQR)
+[![jsQR](https://img.shields.io/badge/Decoder-jsQR%201.4.0-000000?style=flat-square)](https://github.com/cozmo/jsQR)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Privacy](https://img.shields.io/badge/隐私-纯本地离线-blueviolet?style=flat-square)](#-隐私)
+[![Privacy](https://img.shields.io/badge/Privacy-100%25%20local-blueviolet?style=flat-square)](#-privacy)
 
-原生右键菜单识别网页二维码 —— 是链接就新开标签，是文本就复制剪贴板。<br>
-纯本地解码，**不上传任何图片**。
+Scan QR codes on any web page from the native right-click menu. Links open in a new tab; text is copied to your clipboard.<br>
+Decoding runs locally. **No images are uploaded.**
 
 </div>
 
 ---
 
-## ✨ 功能一览
+## ✨ Features
 
-| 能力 | 说明 |
+| Feature | Description |
 |:---|:---|
-| 🖱️ 原生右键菜单 | 任意二维码上右键 → `识别二维码并打开链接` |
-| 🔗 智能分流 | http/https 链接自动新开标签；普通文本复制到剪贴板 |
-| 🧩 全场景支持 | 图片二维码、Canvas 弹窗、CSS 背景图、Shadow DOM 一网打尽 |
-| 🎯 多码精准识别 | 页面上多个二维码挨在一起时，只识别你右键的那一个 |
-| 🔒 纯本地解码 | jsQR 本地运行，不上传、无埋点、无多余界面 |
+| 🖱️ Native context menu | Right-click a QR code → `Scan QR code & open link` |
+| 🔗 Smart handling | http/https links open in a new tab; other text is copied to the clipboard |
+| 🧩 Works everywhere | Image QR codes, canvas pop-ups, CSS background images, Shadow DOM |
+| 🎯 Picks the right code | When several QR codes sit side by side, only the one you right-clicked is decoded |
+| 🔒 Local decoding | jsQR runs on your machine. No uploads, no tracking, no clutter |
 
-## 🚀 安装（约 30 秒）
+## 🚀 Install (about 30 seconds)
 
 ```bash
 git clone https://github.com/liyongjian5179/qr-rightclick.git
 ```
 
-1. Chrome 打开 `chrome://extensions/`
-2. 右上角开启 **开发者模式**
-3. 点击 **加载已解压的扩展程序**，选中 `qr-rightclick` 文件夹
-4. 完成 ✅ 刷新网页即可使用
+1. Open `chrome://extensions/` in Chrome
+2. Turn on **Developer mode** (top right)
+3. Click **Load unpacked** and select the `qr-rightclick` folder
+4. Done ✅ Refresh any open page to start using it
 
-> 也支持直接下载 ZIP 解压后加载，效果相同。
+> You can also download the ZIP from [Releases](https://github.com/liyongjian5179/qr-rightclick/releases), unzip it, and load it the same way.
 
-## 📖 使用方式
-
-```
-   在可见的二维码上右键
-        │
-        ▼
- 识别二维码并打开链接
-        │
-   ┌────┴────┐
-   ▼         ▼
- 链接      文本
-   │         │
-新开标签   复制+提示
-```
-
-## 🛠 技术方案
-
-两条解码路径，按顺序尝试：
+## 📖 Usage
 
 ```
-右键图片 ──→ 扩展后台取图片本身 ──→ jsQR 解码 ──┐
-   │ 不是图片 / 取图失败                         ├─→ 链接新开标签 / 文本复制
-   └──→ captureVisibleTab 截屏 ──→ 只解码右键处 ──┘
+ Right-click a visible QR code
+              │
+              ▼
+  Scan QR code & open link
+              │
+        ┌─────┴─────┐
+        ▼           ▼
+      Link        Text
+        │           │
+  Open new tab   Copy + notify
 ```
 
-1. **图片直取**：右键的是 `<img>` 时，扩展后台直接下载这张图解码，结果只来自被点的这张图，不受旁边其他码影响。后台请求不受页面 CORS 限制，防盗链图片也能取到。
-2. **截屏兜底**：Canvas、CSS 背景图、Shadow DOM 里的码没有图片地址，改为截取可见页面，按 `content.js` 记录的右键位置裁剪后解码。
+## 🛠 How it works
 
-## ⚠️ 限制 & 已知问题
+Two decoding paths, tried in order:
 
-1. 非图片类二维码（Canvas / 背景图）走截屏，需在**可见区域内**完整显示
-2. 安装或更新扩展前就已打开的页面，需**刷新一次**才能记录右键位置；未刷新时多码页面会提示重试
-3. 仅支持 Chromium 内核浏览器（Chrome / Edge）
+```
+Right-click image ──→ fetch the image itself ──→ jsQR decode ──┐
+   │ not an image / fetch failed                               ├─→ open link / copy text
+   └──→ captureVisibleTab screenshot ──→ decode the clicked area ──┘
+```
 
-## 🔒 隐私
+1. **Direct image fetch**: when you right-click an `<img>`, the extension's background worker downloads that image and decodes it. The result comes only from the image you clicked, so nearby QR codes can't interfere. The background request isn't subject to the page's CORS rules, so hotlink-protected images work too.
+2. **Screenshot fallback**: QR codes drawn on a canvas, set as a CSS background, or inside Shadow DOM have no image URL. For these, the extension captures the visible page and decodes only the area around your right-click, which `content.js` records.
 
-- 解码全程在本地 Service Worker 内完成，**不上传任何图片或识别结果**
-- 唯一的网络请求：右键图片时重新获取这张图片本身（通常直接命中浏览器缓存），不会发往其他地址
-- 不收集、不存储任何页面内容；无统计、无埋点
-- `<all_urls>` 权限仅用于截屏和取图解码
+## ⚠️ Limitations
 
-## ☕ 请作者喝杯咖啡
+1. Non-image QR codes (canvas / background images) use the screenshot path and must be fully visible on screen
+2. Pages opened before the extension was installed or updated need **one refresh** so the click position can be recorded. Without it, pages with several QR codes will ask you to retry
+3. Chromium-based browsers only (Chrome / Edge)
 
-如果这个扩展帮到了你，欢迎请作者喝杯咖啡 ☕
+## 🔒 Privacy
 
-**海外用户**：[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/liyongjian5179)
+- All decoding happens locally in the service worker. **No images or results are uploaded**
+- The only network request: when you right-click an image, the extension fetches that same image again (usually served from the browser cache). Nothing is sent anywhere else
+- No page content is collected or stored. No analytics, no tracking
+- The `<all_urls>` permission is used only to take screenshots and fetch images for decoding
 
-**国内用户**：微信 / 支付宝扫码
+## ☕ Buy me a coffee
 
-**试试用这个扩展扫一扫下面的收款码** —— 毕竟它就是干这个的 😄
+If this extension saves you time, consider buying me a coffee ☕
 
-<div align="center">
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/liyongjian5179)
 
-| 微信 | 支付宝 |
-|:---:|:---:|
-| <img src="donate/wechat.png" width="220" alt="微信收款码"> | <img src="donate/alipay.png" width="220" alt="支付宝收款码"> |
+Users in China can tip via WeChat Pay or Alipay. See the [Chinese README](README.zh-CN.md#-请作者喝杯咖啡).
 
-</div>
-
-## 📁 项目结构
+## 📁 Project structure
 
 ```
 qr-rightclick/
-├─ manifest.json      # MV3 清单
-├─ bg.js              # Service Worker：取图 / 截屏、解码、打开链接
-├─ content.js         # 记录右键位置（截屏兜底时定位用）
-├─ popup.*            # 工具栏弹窗：使用说明 + 赞赏
-├─ donate/            # 收款码（弹窗与 README 共用）
-├─ jsQR.min.js        # 二维码解码库（MIT）
-├─ _locales/          # 中英文扩展名与描述
-└─ icons/             # 扩展图标（4 尺寸）
+├─ manifest.json      # MV3 manifest
+├─ bg.js              # Service worker: fetch / screenshot, decode, open link
+├─ content.js         # Records the right-click position (for the screenshot fallback)
+├─ popup.*            # Toolbar popup: usage + support links
+├─ donate/            # Payment QR codes (shared by the popup and README)
+├─ jsQR.min.js        # QR decoding library (MIT)
+├─ _locales/          # English and Chinese strings
+└─ icons/             # Extension icons (4 sizes)
 ```
 
-## 🧩 依赖
+## 🧩 Dependencies
 
-- [jsQR 1.4.0](https://github.com/cozmo/jsQR) — 纯前端二维码解码库，MIT 协议
+- [jsQR 1.4.0](https://github.com/cozmo/jsQR): pure JavaScript QR code decoder, MIT license
 
 ## 📜 License
 
-MIT — 仅可用于你拥有访问授权的页面，禁止用于违规、破解相关场景。
+MIT. Use it only on pages you are authorized to access. Do not use it for illegal purposes or to bypass security measures.
 
 ---
 
 <div align="center">
 
-**如果这个扩展帮到了你，欢迎点一个 ⭐ Star**
+**If you find this extension useful, a ⭐ Star is appreciated**
 
 </div>
