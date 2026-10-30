@@ -38,5 +38,13 @@
   "donateRegion": {
     "message": "intl",
     "description": "Donate method for this locale: cn = WeChat/Alipay, intl = Creem. Not shown to users."
+  },
+  "popupCopied": {
+    "message": "Copied: ",
+    "description": "Popup scan result prefix"
+  },
+  "popupResult": {
+    "message": "Result: ",
+    "description": "Popup scan result prefix"
   }
 }

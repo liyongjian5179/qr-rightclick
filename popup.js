@@ -16,3 +16,18 @@ if (chrome.i18n.getMessage("donateRegion") === "cn") {
 } else {
   document.querySelector(".donate").hidden = true;
 }
+
+// 在弹窗里右键收款码时没有网页可注入，识别结果由 bg.js 发到这里显示
+chrome.runtime.onMessage.addListener((msg) => {
+  if (!msg || msg.type !== "qr-result") return;
+  const el = document.getElementById("result");
+  const show = (prefix) => {
+    el.textContent = prefix + msg.text;
+    el.hidden = false;
+  };
+  if (!msg.copy) return show("");
+  navigator.clipboard.writeText(msg.text).then(
+    () => show(chrome.i18n.getMessage("popupCopied")),
+    () => show(chrome.i18n.getMessage("popupResult"))
+  );
+});

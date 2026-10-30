@@ -15,6 +15,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.srcUrl) res = await decodeImageUrl(info.srcUrl);
 
     // 2) 不是图片（canvas / 背景图等）或图片取不到：截屏，按右键位置裁剪解码
+    // 截屏需要真实标签页；在扩展弹窗里右键时 tab 为 undefined
+    if (!res && !tab) res = { ok: false, msg: "未识别到二维码" };
     if (!res) {
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
       // 右键位置由 content.js 记录（info 不含坐标）；扩展装好前就打开的页面取不到，为 null
@@ -28,28 +30,18 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 
     if (!res.ok) {
-      notify(tab.id, res.msg);
+      await notify(tab, res.msg);
       return;
     }
     const txt = res.data;
     if (/^https?:\/\//.test(txt)) {
       chrome.tabs.create({ url: txt });
     } else {
-      // SW 无法访问 alert/clipboard，注入页面执行复制与提示
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: (text) => {
-          navigator.clipboard.writeText(text).then(
-            () => alert(`内容已复制：${text}`),
-            () => alert(`识别结果：${text}`)
-          );
-        },
-        args: [txt]
-      });
+      await notify(tab, txt, true);
     }
   } catch (e) {
     console.error(e);
-    notify(tab.id, `识别失败：${e && e.message ? e.message : e}`);
+    await notify(tab, `识别失败：${e && e.message ? e.message : e}`);
   }
 });
 
@@ -181,11 +173,28 @@ function maskRegion(idata, b, p) {
   }
 }
 
-// SW 环境没有 alert，把提示注入到页面里弹
-function notify(tabId, msg) {
-  chrome.scripting.executeScript({
-    target: { tabId },
-    func: (m) => alert(m),
-    args: [msg]
-  }).catch(() => {}); // chrome:// 等特殊页面注入失败时静默，错误已打在 SW 控制台
+// SW 环境没有 alert / 剪贴板：注入到页面里弹提示，copy 为 true 时先复制文本
+// 在扩展弹窗里右键时 tab 为 undefined，chrome:// 等页面也无法注入，改为发给弹窗显示
+async function notify(tab, text, copy = false) {
+  if (tab && tab.id >= 0) {
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (t, c) => {
+          if (!c) return alert(t);
+          navigator.clipboard.writeText(t).then(
+            () => alert(`内容已复制：${t}`),
+            () => alert(`识别结果：${t}`)
+          );
+        },
+        args: [text, copy]
+      });
+      return;
+    } catch (e) {
+      console.warn("[qr] 页面注入失败，改由弹窗显示:", e);
+    }
+  }
+  // 弹窗没打开时没有接收方，sendMessage 会报错，只能留在 SW 控制台
+  await chrome.runtime.sendMessage({ type: "qr-result", text, copy })
+    .catch(() => console.warn("[qr] 无法显示结果:", text));
 }
