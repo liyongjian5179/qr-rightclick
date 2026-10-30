@@ -62,5 +62,17 @@
   "errFailed": {
     "message": "识别失败：",
     "description": "Error shown to the user"
+  },
+  "payHint": {
+    "message": "这是支付二维码，请在手机上用对应的 App 扫码（微信 / 支付宝），浏览器无法打开。",
+    "description": "Shown when the decoded QR is a WeChat/Alipay payment code"
+  },
+  "wxHint": {
+    "message": "这是微信公众号 / 微信名片二维码，需要在手机微信里扫码打开，浏览器打不开。",
+    "description": "Shown when the decoded QR is a WeChat official account or contact code"
+  },
+  "appHint": {
+    "message": "这是 {scheme} 专用链接，浏览器无法打开，请在手机上对应的 App 里使用。",
+    "description": "Shown when the decoded QR uses a non-http app scheme. {scheme} is replaced with the scheme name"
   }
 }

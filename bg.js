@@ -34,7 +34,17 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       return;
     }
     const txt = res.data;
-    if (/^https?:\/\//.test(txt)) {
+    if (/^(wxp:\/\/|weixin:\/\/|alipays:\/\/|alipayqr:\/\/)/i.test(txt) ||
+        /^https?:\/\/(qr|render|ds)\.alipay\.com\//i.test(txt)) {
+      // 支付码：只能在手机对应的 App 里扫，浏览器打开会落到下载页
+      await notify(tab, chrome.i18n.getMessage("payHint"), false);
+    } else if (/^https?:\/\/(weixin\.qq\.com\/r\/|u\.wechat\.com\/)/i.test(txt)) {
+      // 公众号 / 微信名片码：浏览器打开只会落到微信官网首页
+      await notify(tab, chrome.i18n.getMessage("wxHint"), false);
+    } else if (/^[a-z][a-z0-9+.-]*:\/\//i.test(txt) && !/^https?:\/\//i.test(txt)) {
+      // 其他 App 专用协议（taobao:// mqq:// 等），浏览器一律打不开
+      await notify(tab, chrome.i18n.getMessage("appHint").replace("{scheme}", txt.split(":")[0]), false);
+    } else if (/^https?:\/\//.test(txt)) {
       chrome.tabs.create({ url: txt });
     } else {
       await notify(tab, txt, true);

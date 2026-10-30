@@ -62,5 +62,17 @@
   "errFailed": {
     "message": "Scan failed: ",
     "description": "Error shown to the user"
+  },
+  "payHint": {
+    "message": "This is a payment QR code. Please scan it with the app on your phone (WeChat / Alipay) — it can’t be opened in a browser.",
+    "description": "Shown when the decoded QR is a WeChat/Alipay payment code"
+  },
+  "wxHint": {
+    "message": "This is a WeChat official account or contact code. It only works inside WeChat on your phone; a desktop browser can’t open it.",
+    "description": "Shown when the decoded QR is a WeChat official account or contact code"
+  },
+  "appHint": {
+    "message": "This is a {scheme} link that only works in its own app on your phone. A desktop browser can’t open it.",
+    "description": "Shown when the decoded QR uses a non-http app scheme. {scheme} is replaced with the scheme name"
   }
 }
