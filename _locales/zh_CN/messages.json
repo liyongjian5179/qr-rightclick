@@ -6,5 +6,37 @@
   "extDesc": {
     "message": "右键一下，二维码秒变链接。本地离线解码不上传，支持图片/Canvas/背景图二维码，链接直接新开标签。",
     "description": "Extension description (Chinese)"
+  },
+  "menuScan": {
+    "message": "识别二维码并打开链接",
+    "description": "Context menu item"
+  },
+  "popupUsage": {
+    "message": "在网页二维码上右键，选择「识别二维码并打开链接」。链接会新开标签，文本会复制到剪贴板。",
+    "description": "Popup usage hint"
+  },
+  "popupDonateTitle": {
+    "message": "请作者喝杯咖啡",
+    "description": "Popup donate section title"
+  },
+  "popupDonateHint": {
+    "message": "觉得好用的话，可以用手机扫码赞赏",
+    "description": "Popup donate hint"
+  },
+  "popupWechat": {
+    "message": "微信",
+    "description": "WeChat Pay label"
+  },
+  "popupAlipay": {
+    "message": "支付宝",
+    "description": "Alipay label"
+  },
+  "popupCreem": {
+    "message": "赞赏支持",
+    "description": "Creem donate button"
+  },
+  "donateRegion": {
+    "message": "cn",
+    "description": "Donate method for this locale: cn = WeChat/Alipay, intl = Creem. Not shown to users."
   }
 }

@@ -101,6 +101,8 @@ qr-rightclick/
 ├─ manifest.json      # MV3 清单
 ├─ bg.js              # Service Worker：取图 / 截屏、解码、打开链接
 ├─ content.js         # 记录右键位置（截屏兜底时定位用）
+├─ popup.*            # 工具栏弹窗：使用说明 + 赞赏
+├─ donate/            # 收款码（弹窗与 README 共用）
 ├─ jsQR.min.js        # 二维码解码库（MIT）
 ├─ _locales/          # 中英文扩展名与描述
 └─ icons/             # 扩展图标（4 尺寸）

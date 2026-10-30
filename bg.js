@@ -3,7 +3,7 @@ importScripts('jsQR.min.js');
 chrome.contextMenus.removeAll(() => {
   chrome.contextMenus.create({
     id: "scan_qr_open",
-    title: "识别二维码并打开链接",
+    title: chrome.i18n.getMessage("menuScan"),
     contexts: ["all"]
   });
 });

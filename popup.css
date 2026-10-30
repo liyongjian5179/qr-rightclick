@@ -1,0 +1,72 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #656d76;
+  --line: #d0d7de;
+  --accent: #1a7f37;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1f22;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --line: #3d444d;
+    --accent: #2ea043;
+  }
+}
+
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  width: 300px;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+}
+
+header { display: flex; gap: 10px; align-items: center; }
+header img { border-radius: 7px; }
+h1 { margin: 0; font-size: 15px; }
+.ver { margin: 0; color: var(--muted); font-size: 12px; }
+
+.usage {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.donate { border-top: 1px solid var(--line); padding-top: 12px; }
+h2 { margin: 0; font-size: 13px; }
+.hint { margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
+
+.qr-row { display: flex; gap: 12px; }
+figure { flex: 1; margin: 0; text-align: center; }
+/* 收款码固定白底，深色模式下手机也能扫 */
+figure img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 6px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+figcaption { margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+.btn {
+  display: block;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+footer { margin-top: 12px; text-align: right; font-size: 12px; }
+footer a { color: var(--muted); }

@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon48.png" width="32" height="32" alt="">
+    <div>
+      <h1 data-i18n="extName"></h1>
+      <p class="ver" id="ver"></p>
+    </div>
+  </header>
+
+  <p class="usage" data-i18n="popupUsage"></p>
+
+  <section class="donate">
+    <h2 data-i18n="popupDonateTitle"></h2>
+    <p class="hint" data-i18n="popupDonateHint"></p>
+    <div id="donate-cn" class="qr-row" hidden>
+      <figure><img src="donate/wechat.png" alt=""><figcaption data-i18n="popupWechat"></figcaption></figure>
+      <figure><img src="donate/alipay.png" alt=""><figcaption data-i18n="popupAlipay"></figcaption></figure>
+    </div>
+    <a id="donate-intl" class="btn" target="_blank" rel="noopener" hidden data-i18n="popupCreem"></a>
+  </section>
+
+  <footer>
+    <a href="https://github.com/liyongjian5179/qr-rightclick" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

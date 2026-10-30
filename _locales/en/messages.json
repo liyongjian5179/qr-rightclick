@@ -6,5 +6,37 @@
   "extDesc": {
     "message": "Right-click any QR code to open its link instantly. 100% offline decoding — nothing is uploaded. Works on image, canvas and background-image QR codes.",
     "description": "Extension description (English)"
+  },
+  "menuScan": {
+    "message": "Scan QR code & open link",
+    "description": "Context menu item"
+  },
+  "popupUsage": {
+    "message": "Right-click a QR code on any page and choose “Scan QR code & open link”. Links open in a new tab; text is copied to the clipboard.",
+    "description": "Popup usage hint"
+  },
+  "popupDonateTitle": {
+    "message": "Buy me a coffee",
+    "description": "Popup donate section title"
+  },
+  "popupDonateHint": {
+    "message": "If this extension saves you time, consider supporting it.",
+    "description": "Popup donate hint"
+  },
+  "popupWechat": {
+    "message": "WeChat Pay",
+    "description": "WeChat Pay label"
+  },
+  "popupAlipay": {
+    "message": "Alipay",
+    "description": "Alipay label"
+  },
+  "popupCreem": {
+    "message": "Support this project",
+    "description": "Creem donate button"
+  },
+  "donateRegion": {
+    "message": "intl",
+    "description": "Donate method for this locale: cn = WeChat/Alipay, intl = Creem. Not shown to users."
   }
 }
