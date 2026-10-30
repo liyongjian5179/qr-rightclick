@@ -1,21 +1,51 @@
 // 海外赞赏链接；留空时英文界面不显示赞赏区
 const DONATE_URL = "https://ko-fi.com/liyongjian5179";
+const LANGS = ["zh_CN", "en"];
 
-for (const el of document.querySelectorAll("[data-i18n]")) {
-  el.textContent = chrome.i18n.getMessage(el.dataset.i18n);
+// chrome.i18n 只能跟随浏览器语言，手动切换时自己读语言包
+let msgs = {};
+const t = (k) => (msgs[k] && msgs[k].message) || chrome.i18n.getMessage(k);
+
+// 默认跟随 Chrome 实际选用的语言包；用户切换过则用上次的选择
+function initialLang() {
+  try {
+    const saved = localStorage.getItem("lang");
+    if (LANGS.includes(saved)) return saved;
+  } catch {}
+  return chrome.i18n.getMessage("donateRegion") === "cn" ? "zh_CN" : "en";
 }
-document.getElementById("ver").textContent = "v" + chrome.runtime.getManifest().version;
 
-// 按实际显示的语言包选择赞赏方式，保证文案语言与支付方式一致
-if (chrome.i18n.getMessage("donateRegion") === "cn") {
-  document.getElementById("donate-cn").hidden = false;
-} else if (DONATE_URL) {
+async function render(lang) {
+  try {
+    msgs = await (await fetch(`_locales/${lang}/messages.json`)).json();
+  } catch {
+    msgs = {};
+  }
+  document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
+  for (const el of document.querySelectorAll("[data-i18n]")) {
+    el.textContent = t(el.dataset.i18n);
+  }
+  document.getElementById("lang").textContent = lang === "en" ? "中文" : "EN";
+
+  // 赞赏方式随语言切换：中文显示微信/支付宝，英文显示 Ko-fi
+  const cn = t("donateRegion") === "cn";
+  document.getElementById("donate-cn").hidden = !cn;
   const a = document.getElementById("donate-intl");
-  a.href = DONATE_URL;
-  a.hidden = false;
-} else {
-  document.querySelector(".donate").hidden = true;
+  a.hidden = cn || !DONATE_URL;
+  if (DONATE_URL) a.href = DONATE_URL;
+  document.querySelector(".donate").hidden = !cn && !DONATE_URL;
 }
+
+let lang = initialLang();
+document.getElementById("ver").textContent = "v" + chrome.runtime.getManifest().version;
+document.getElementById("lang").addEventListener("click", () => {
+  lang = lang === "en" ? "zh_CN" : "en";
+  try {
+    localStorage.setItem("lang", lang);
+  } catch {}
+  render(lang);
+});
+render(lang);
 
 // 在弹窗里右键收款码时没有网页可注入，识别结果由 bg.js 发到这里显示
 chrome.runtime.onMessage.addListener((msg) => {
@@ -27,7 +57,7 @@ chrome.runtime.onMessage.addListener((msg) => {
   };
   if (!msg.copy) return show("");
   navigator.clipboard.writeText(msg.text).then(
-    () => show(chrome.i18n.getMessage("popupCopied")),
-    () => show(chrome.i18n.getMessage("popupResult"))
+    () => show(t("popupCopied")),
+    () => show(t("popupResult"))
   );
 });
