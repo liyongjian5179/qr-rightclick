@@ -10,7 +10,7 @@
 来自 `_locales`，不用填：英文 `QR Right-Click`，中文 `极简右键扫码打开`
 
 ### 摘要 Summary（manifest description，132 字符内，自动读取）
-- EN: Right-click any QR code to open its link instantly. 100% offline decoding — nothing is uploaded. Works on image, canvas and background-image QR codes.
+- EN: Right-click any QR code on a web page to open its link or copy its text. Decoded locally on your device, nothing is uploaded.
 - 中文：右键一下，二维码秒变链接。本地离线解码不上传，支持图片/Canvas/背景图二维码，链接直接新开标签。
 
 ### 详细说明 Description — English

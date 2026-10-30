@@ -4,7 +4,7 @@
     "description": "Extension name (English)"
   },
   "extDesc": {
-    "message": "Right-click any QR code to open its link instantly. 100% offline decoding — nothing is uploaded. Works on image, canvas and background-image QR codes.",
+    "message": "Right-click any QR code on a web page to open its link or copy its text. Decoded locally on your device, nothing is uploaded.",
     "description": "Extension description (English)"
   },
   "menuScan": {
