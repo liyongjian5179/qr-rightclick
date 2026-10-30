@@ -74,5 +74,25 @@
   "appHint": {
     "message": "This is a {scheme} link that only works in its own app on your phone. A desktop browser can’t open it.",
     "description": "Shown when the decoded QR uses a non-http app scheme. {scheme} is replaced with the scheme name"
+  },
+  "wifiTitle": {
+    "message": "Wi-Fi: ",
+    "description": "Wi-Fi QR: network name"
+  },
+  "wifiPassword": {
+    "message": "Password: ",
+    "description": "Wi-Fi QR: password label"
+  },
+  "wifiNoPassword": {
+    "message": " (no password)",
+    "description": "Wi-Fi QR: open network"
+  },
+  "wifiCopied": {
+    "message": " (copied)",
+    "description": "Wi-Fi QR: password copied note"
+  },
+  "vcardSaved": {
+    "message": "Contact card saved: {name}",
+    "description": "Contact card saved message. {name} is replaced with the contact name"
   }
 }

@@ -74,5 +74,25 @@
   "appHint": {
     "message": "这是 {scheme} 专用链接，浏览器无法打开，请在手机上对应的 App 里使用。",
     "description": "Shown when the decoded QR uses a non-http app scheme. {scheme} is replaced with the scheme name"
+  },
+  "wifiTitle": {
+    "message": "Wi-Fi：",
+    "description": "Wi-Fi QR: network name"
+  },
+  "wifiPassword": {
+    "message": "密码：",
+    "description": "Wi-Fi QR: password label"
+  },
+  "wifiNoPassword": {
+    "message": "（无需密码）",
+    "description": "Wi-Fi QR: open network"
+  },
+  "wifiCopied": {
+    "message": "（已复制）",
+    "description": "Wi-Fi QR: password copied note"
+  },
+  "vcardSaved": {
+    "message": "已保存联系人名片：{name}",
+    "description": "Contact card saved message. {name} is replaced with the contact name"
   }
 }

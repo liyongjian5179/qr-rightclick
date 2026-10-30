@@ -20,7 +20,10 @@ Scan QR codes on any web page without reaching for your phone.
 
 Right-click a QR code and choose "Scan QR code & open link":
 • Links open in a new tab right away
-• Anything else (Wi-Fi details, coupon codes, plain text) is copied to your clipboard
+• Wi-Fi codes show the network name and password (password copied for you)
+• Contact cards save as a .vcf file you can import
+• WeChat / Alipay / app-only codes get a clear hint instead of a dead page
+• Anything else (coupon codes, plain text) is copied to your clipboard
 
 WORKS ON ANY QR CODE
 • Regular images, including hotlink-protected ones
@@ -48,7 +51,10 @@ Like it? You can buy me a coffee from the toolbar popup. The extension is comple
 
 在二维码上右键，选择「识别二维码并打开链接」：
 • 链接直接新开标签打开
-• 其他内容（Wi-Fi 信息、优惠码、普通文本）自动复制到剪贴板
+• Wi-Fi 码直接显示网络名和密码，密码自动复制
+• 名片码保存为 .vcf 文件，可直接导入通讯录
+• 微信 / 支付宝 / App 专用码给出明确提示，而不是打开一个空白页
+• 其他内容（优惠码、普通文本）自动复制到剪贴板
 
 支持各种二维码
 • 普通图片，包括防盗链图片

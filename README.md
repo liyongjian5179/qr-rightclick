@@ -26,6 +26,7 @@ Decoding runs locally. **No images are uploaded.**
 | 🔗 Smart handling | http/https links open in a new tab; other text is copied to the clipboard |
 | 🧩 Works everywhere | Image QR codes, canvas pop-ups, CSS background images, Shadow DOM |
 | 🎯 Picks the right code | When several QR codes sit side by side, only the one you right-clicked is decoded |
+| 🧠 Understands the content | Links open, text is copied, Wi-Fi codes show the network and password, contact cards save as `.vcf`, WeChat / Alipay codes get a hint instead of a dead page |
 | 🔒 Local decoding | jsQR runs on your machine. No uploads, no tracking, no clutter |
 
 ## 🚀 Install (about 30 seconds)

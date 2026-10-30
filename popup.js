@@ -51,13 +51,11 @@ render(lang);
 chrome.runtime.onMessage.addListener((msg) => {
   if (!msg || msg.type !== "qr-result") return;
   const el = document.getElementById("result");
-  const show = (prefix) => {
-    el.textContent = prefix + msg.text;
-    el.hidden = false;
-  };
-  if (!msg.copy) return show("");
-  navigator.clipboard.writeText(msg.text).then(
-    () => show(t("popupCopied")),
-    () => show(t("popupResult"))
-  );
+  el.textContent = msg.text;
+  el.hidden = false;
+  if (msg.copy) {
+    navigator.clipboard.writeText(msg.copy).catch(() => {
+      if (msg.fail) el.textContent = msg.fail;
+    });
+  }
 });

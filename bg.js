@@ -37,17 +37,36 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (/^(wxp:\/\/|weixin:\/\/|alipays:\/\/|alipayqr:\/\/)/i.test(txt) ||
         /^https?:\/\/(qr|render|ds)\.alipay\.com\//i.test(txt)) {
       // 支付码：只能在手机对应的 App 里扫，浏览器打开会落到下载页
-      await notify(tab, chrome.i18n.getMessage("payHint"), false);
+      await notify(tab, chrome.i18n.getMessage("payHint"));
     } else if (/^https?:\/\/(weixin\.qq\.com\/r\/|u\.wechat\.com\/)/i.test(txt)) {
       // 公众号 / 微信名片码：浏览器打开只会落到微信官网首页
-      await notify(tab, chrome.i18n.getMessage("wxHint"), false);
-    } else if (/^[a-z][a-z0-9+.-]*:\/\//i.test(txt) && !/^https?:\/\//i.test(txt)) {
-      // 其他 App 专用协议（taobao:// mqq:// 等），浏览器一律打不开
-      await notify(tab, chrome.i18n.getMessage("appHint").replace("{scheme}", txt.split(":")[0]), false);
+      await notify(tab, chrome.i18n.getMessage("wxHint"));
+    } else if (/^WIFI:/i.test(txt)) {
+      // Wi-Fi 配置码：解析成名称和密码，密码顺手复制
+      const w = parseWifi(txt);
+      const head = chrome.i18n.getMessage("wifiTitle") + w.ssid;
+      if (!w.pass) {
+        await notify(tab, head + chrome.i18n.getMessage("wifiNoPassword"));
+      } else {
+        const body = head + "\n" + chrome.i18n.getMessage("wifiPassword") + w.pass;
+        await notify(tab, body + chrome.i18n.getMessage("wifiCopied"), w.pass, body);
+      }
+    } else if (/^BEGIN:VCARD/i.test(txt)) {
+      // 名片码：生成 .vcf 文件下载，直接能导入通讯录
+      await saveVCard(tab, txt);
+    } else if (/^mailto:/i.test(txt)) {
+      // 邮箱链接桌面浏览器能处理，交给系统邮件客户端
+      chrome.tabs.create({ url: txt });
     } else if (/^https?:\/\//.test(txt)) {
       chrome.tabs.create({ url: txt });
+    } else if (/^[a-z][a-z0-9+.-]*:/i.test(txt)) {
+      // 其他 App 专用协议（tel: sms: taobao:// 等），浏览器打不开
+      await notify(tab, chrome.i18n.getMessage("appHint").replace("{scheme}", txt.split(":")[0]));
     } else {
-      await notify(tab, txt, true);
+      await notify(tab,
+        chrome.i18n.getMessage("popupCopied") + txt,
+        txt,
+        chrome.i18n.getMessage("popupResult") + txt);
     }
   } catch (e) {
     console.error(e);
@@ -183,21 +202,21 @@ function maskRegion(idata, b, p) {
   }
 }
 
-// SW 环境没有 alert / 剪贴板：注入到页面里弹提示，copy 为 true 时先复制文本
+// SW 环境没有 alert / 剪贴板：注入到页面里弹提示；copyText 非空时先复制它
 // 在扩展弹窗里右键时 tab 为 undefined，chrome:// 等页面也无法注入，改为发给弹窗显示
-async function notify(tab, text, copy = false) {
+async function notify(tab, text, copyText = null, failText = null) {
   if (tab && tab.id >= 0) {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (t, c, copied, result) => {
-          if (!c) return alert(t);
-          navigator.clipboard.writeText(t).then(
-            () => alert(copied + t),
-            () => alert(result + t)
+        func: (msg, copy, fail) => {
+          if (!copy) return alert(msg);
+          navigator.clipboard.writeText(copy).then(
+            () => alert(msg),
+            () => alert(fail || msg)
           );
         },
-        args: [text, copy, chrome.i18n.getMessage("popupCopied"), chrome.i18n.getMessage("popupResult")]
+        args: [text, copyText || "", failText || ""]
       });
       return;
     } catch (e) {
@@ -205,6 +224,56 @@ async function notify(tab, text, copy = false) {
     }
   }
   // 弹窗没打开时没有接收方，sendMessage 会报错，只能留在 SW 控制台
-  await chrome.runtime.sendMessage({ type: "qr-result", text, copy })
+  await chrome.runtime.sendMessage({ type: "qr-result", text, copy: copyText || "", fail: failText || "" })
     .catch(() => console.warn("[qr] 无法显示结果:", text));
+}
+
+// Wi-Fi 码格式：WIFI:T:WPA;S:名称;P:密码;H:true;;
+// 值里的 \; \, \: \\ 是转义，需要还原
+function parseWifi(text) {
+  const fields = {};
+  const body = text.replace(/^WIFI:/i, "");
+  const re = /([A-Za-z]):((?:\\.|[^;])*);/g;
+  let m;
+  while ((m = re.exec(body))) {
+    fields[m[1].toUpperCase()] = m[2].replace(/\\(.)/g, "$1");
+  }
+  return { ssid: fields.S || "", pass: fields.P || "", type: fields.T || "" };
+}
+
+// 名片码：在页面里生成 .vcf 并触发下载；无页面可注入时退回复制原文
+async function saveVCard(tab, data) {
+  const name = vcardField(data, "FN") || vcardField(data, "N") || "";
+  const file = (name || "contact").replace(/[\\/:*?"<>|]/g, "_").slice(0, 40) + ".vcf";
+  const msg = chrome.i18n.getMessage("vcardSaved").replace("{name}", name || "-");
+  if (tab && tab.id >= 0) {
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (content, filename, message) => {
+          const url = URL.createObjectURL(new Blob([content], { type: "text/vcard;charset=utf-8" }));
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
+          alert(message);
+        },
+        args: [data, file, msg]
+      });
+      return;
+    } catch (e) {
+      console.warn("[qr] 保存名片失败，改为复制原文:", e);
+    }
+  }
+  await notify(tab, chrome.i18n.getMessage("popupCopied") + data, data);
+}
+
+// 取 vCard 字段（先拼接折行，再按行匹配）
+function vcardField(vcf, key) {
+  const unfolded = vcf.replace(/\r?\n[ \t]/g, "");
+  const m = unfolded.match(new RegExp("^" + key + "[^:\\r\\n]*:(.*)$", "im"));
+  return m ? m[1].trim() : "";
 }
