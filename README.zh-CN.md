@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🖱️ 极简右键扫码
+# 🖱️ QR Right-Click · 右键扫码
 
 **右键一下，二维码直接打开**
 

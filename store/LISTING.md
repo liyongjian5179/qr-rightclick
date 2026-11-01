@@ -7,7 +7,7 @@
 ## 1. 商品详情 / Store listing
 
 ### 名称 Name
-来自 `_locales`，不用填：英文 `QR Right-Click`，中文 `极简右键扫码打开`
+来自 `_locales`，不用填：英文 `QR Right-Click`，中文 `QR Right-Click · 右键扫码`
 
 ### 摘要 Summary（manifest description，132 字符内，自动读取）
 - EN: Right-click any QR code on a web page to open its link or copy its text. Decoded locally on your device, nothing is uploaded.
