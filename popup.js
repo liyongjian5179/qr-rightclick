@@ -52,6 +52,7 @@ chrome.runtime.onMessage.addListener((msg) => {
   if (!msg || msg.type !== "qr-result") return;
   const el = document.getElementById("result");
   el.textContent = msg.text;
+  el.classList.toggle("is-error", !!msg.error);
   el.hidden = false;
   if (msg.copy) {
     navigator.clipboard.writeText(msg.copy).catch(() => {

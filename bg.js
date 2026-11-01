@@ -30,7 +30,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 
     if (!res.ok) {
-      await notify(tab, res.msg);
+      await notify(tab, res.msg, null, null, "error");
       return;
     }
     const txt = res.data;
@@ -62,6 +62,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     } else if (/^[a-z][a-z0-9+.-]*:/i.test(txt)) {
       // 其他 App 专用协议（tel: sms: taobao:// 等），浏览器打不开
       await notify(tab, chrome.i18n.getMessage("appHint").replace("{scheme}", txt.split(":")[0]));
+    } else if (!/\s/.test(txt) && /^(?:localhost|\d{1,3}(?:\.\d{1,3}){3}|(?:[\w-]+\.)+[a-z]{2,})(?::\d+)?(?:[/?#]\S*)?$/i.test(txt)) {
+      // 没写协议的网址：和地址栏一样，域名补 https，localhost / IP 补 http
+      const host = txt.split(/[/:?#]/)[0];
+      const local = /^(localhost|\d{1,3}(\.\d{1,3}){3})$/i.test(host);
+      chrome.tabs.create({ url: (local ? "http://" : "https://") + txt });
     } else {
       await notify(tab,
         chrome.i18n.getMessage("popupCopied") + txt,
@@ -70,7 +75,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
   } catch (e) {
     console.error(e);
-    await notify(tab, chrome.i18n.getMessage("errFailed") + (e && e.message ? e.message : e));
+    await notify(tab, chrome.i18n.getMessage("errFailed") + (e && e.message ? e.message : e), null, null, "error");
   }
 });
 
@@ -128,25 +133,29 @@ function pad(r, ratio) {
   return { x: r.x - dx, y: r.y - dy, w: r.w + dx * 2, h: r.h + dy * 2 };
 }
 
-// 解码图像中的一块区域；多尺度重试（小而密的码缩小后反而更易识别）
+// 解码图像中的一块区域：小图放大、大图缩小，并同时尝试反色（白码黑底）
 // margin：四周补白边的比例（相对区域长边）
 function decodeRegion(bmp, x, y, w, h, margin = 0) {
   const x0 = Math.max(0, Math.floor(x)), y0 = Math.max(0, Math.floor(y));
   const x1 = Math.min(bmp.width, Math.ceil(x + w)), y1 = Math.min(bmp.height, Math.ceil(y + h));
   const rw = x1 - x0, rh = y1 - y0;
   if (rw < 20 || rh < 20) return null;
-  const base = Math.min(1, 1200 / Math.max(rw, rh)); // 过大区域先缩小控制耗时
+  const longest = Math.max(rw, rh);
+  // 网页里的码常被裁得很小，放大到 400px 上下更好识别；过大则缩小控制耗时
+  const base = longest < 400 ? Math.min(4, 400 / longest) : Math.min(1, 1200 / longest);
   for (const f of [1, 0.7, 0.5]) {
     const s = base * f;
     const cw = Math.max(1, Math.round(rw * s)), ch = Math.max(1, Math.round(rh * s));
     const m = Math.round(Math.max(cw, ch) * margin);
     const c = new OffscreenCanvas(cw + m * 2, ch + m * 2);
     const cctx = c.getContext("2d");
+    cctx.imageSmoothingEnabled = s <= 1; // 放大时保持模块边缘锐利
     // 先铺白底：透明背景的 PNG 码图，透明像素会被 jsQR 当成黑色
     cctx.fillStyle = "#fff";
     cctx.fillRect(0, 0, c.width, c.height);
     cctx.drawImage(bmp, x0, y0, rw, rh, m, m, cw, ch);
-    const qr = jsQR(cctx.getImageData(0, 0, c.width, c.height).data, c.width, c.height);
+    const qr = jsQR(cctx.getImageData(0, 0, c.width, c.height).data, c.width, c.height,
+      { inversionAttempts: "attemptBoth" });
     if (qr) return qr;
   }
   return null;
@@ -163,13 +172,13 @@ function collectAll(bmp) {
     const cctx = c.getContext("2d");
     cctx.drawImage(bmp, 0, 0, w, h);
     const idata = cctx.getImageData(0, 0, w, h);
-    let qr = jsQR(idata.data, w, h);
+    let qr = jsQR(idata.data, w, h, { inversionAttempts: "attemptBoth" });
     while (qr && found.length < 5) {
       found.push({ code: qr, s });
       // jsQR 的 location 是内部估计值，比实际码边界小，需按边长 15% 外扩才能盖住
       const b = bbox(qr.location);
       maskRegion(idata, b, Math.max(8, Math.round(Math.max(b.maxX - b.minX, b.maxY - b.minY) * 0.15)));
-      qr = jsQR(idata.data, w, h);
+      qr = jsQR(idata.data, w, h, { inversionAttempts: "attemptBoth" });
     }
     if (found.length) return found;
   }
@@ -202,21 +211,46 @@ function maskRegion(idata, b, p) {
   }
 }
 
-// SW 环境没有 alert / 剪贴板：注入到页面里弹提示；copyText 非空时先复制它
+// SW 环境没有 alert / 剪贴板：注入到页面里显示提示；copyText 非空时先复制它
 // 在扩展弹窗里右键时 tab 为 undefined，chrome:// 等页面也无法注入，改为发给弹窗显示
-async function notify(tab, text, copyText = null, failText = null) {
+async function notify(tab, text, copyText = null, failText = null, level = "info") {
   if (tab && tab.id >= 0) {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (msg, copy, fail) => {
-          if (!copy) return alert(msg);
+        func: (msg, copy, fail, isErr) => {
+          // 右上角 toast：不阻塞页面，几秒后自动消失
+          const show = (message, isError) => {
+            const ID = "__qr_toast__";
+            const old = document.getElementById(ID);
+            if (old) old.remove();
+            const host = document.createElement("div");
+            host.id = ID;
+            host.style.cssText = "all:initial;position:fixed;top:16px;right:16px;z-index:2147483647";
+            const root = host.attachShadow({ mode: "closed" });
+            const bg = isError ? "#c62828" : "#1f1f1f";
+            root.innerHTML =
+              "<style>.t{max-width:380px;padding:10px 14px;border-radius:10px;background:" + bg + ";" +
+              "color:#fff;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;" +
+              "box-shadow:0 8px 28px rgba(0,0,0,.28);word-break:break-all;white-space:pre-wrap;" +
+              "opacity:0;transform:translateY(-6px);transition:opacity .18s,transform .18s}" +
+              ".t.show{opacity:1;transform:none}</style><div class='t'></div>";
+            root.querySelector(".t").textContent = message;
+            document.documentElement.appendChild(host);
+            const el = root.querySelector(".t");
+            requestAnimationFrame(() => el.classList.add("show"));
+            setTimeout(() => {
+              el.classList.remove("show");
+              setTimeout(() => host.remove(), 200);
+            }, isError ? 4500 : 3200);
+          };
+          if (!copy) return show(msg, isErr);
           navigator.clipboard.writeText(copy).then(
-            () => alert(msg),
-            () => alert(fail || msg)
+            () => show(msg, false),
+            () => show(fail || msg, true)
           );
         },
-        args: [text, copyText || "", failText || ""]
+        args: [text, copyText || "", failText || "", level === "error"]
       });
       return;
     } catch (e) {
@@ -224,7 +258,7 @@ async function notify(tab, text, copyText = null, failText = null) {
     }
   }
   // 弹窗没打开时没有接收方，sendMessage 会报错，只能留在 SW 控制台
-  await chrome.runtime.sendMessage({ type: "qr-result", text, copy: copyText || "", fail: failText || "" })
+  await chrome.runtime.sendMessage({ type: "qr-result", text, copy: copyText || "", fail: failText || "", error: level === "error" })
     .catch(() => console.warn("[qr] 无法显示结果:", text));
 }
 
@@ -250,7 +284,7 @@ async function saveVCard(tab, data) {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (content, filename, message) => {
+        func: (content, filename) => {
           const url = URL.createObjectURL(new Blob([content], { type: "text/vcard;charset=utf-8" }));
           const a = document.createElement("a");
           a.href = url;
@@ -259,10 +293,11 @@ async function saveVCard(tab, data) {
           a.click();
           a.remove();
           setTimeout(() => URL.revokeObjectURL(url), 10000);
-          alert(message);
         },
-        args: [data, file, msg]
+        args: [data, file]
       });
+      // 下载与提示分开：提示统一走 notify 的 toast
+      await notify(tab, msg);
       return;
     } catch (e) {
       console.warn("[qr] 保存名片失败，改为复制原文:", e);

@@ -93,3 +93,5 @@ footer a { color: var(--muted); }
   color: #fff;
   word-break: break-all;
 }
+
+.result.is-error { background: #c62828; }
