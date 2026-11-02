@@ -2,6 +2,8 @@
 
 提交时逐项复制粘贴。图片都在本目录，重新生成：`zsh store/src/render.sh`
 
+> 商店页面没有独立的「更新说明」字段，变更历史写进「详细说明」结尾，每次发版手动加一行。
+
 ---
 
 ## 1. 商品详情 / Store listing
@@ -43,6 +45,10 @@ PRIVATE BY DESIGN
 Available in English and Chinese, with a one-click language switch in the toolbar popup.
 
 Like it? You can buy me a coffee from the toolbar popup. The extension is completely free.
+
+Changelog
+1.7 — Results now appear as a light toast instead of a blocking dialog; Wi-Fi codes show the network and password; contact cards save as .vcf; URLs without a scheme are filled in automatically; new Chinese display name.
+1.4 — First public release: right-click any QR code to open its link or copy its text, with multi-code detection, English and Chinese UI, and a toolbar popup.
 ```
 
 ### 详细说明 Description — 中文
@@ -75,6 +81,10 @@ Like it? You can buy me a coffee from the toolbar popup. The extension is comple
 支持中英文，可在工具栏弹窗里一键切换语言。
 
 觉得好用的话，可以在工具栏弹窗里请作者喝杯咖啡。扩展完全免费。
+
+更新记录
+1.7 — 识别结果改为轻量提示条，不再弹阻塞式对话框；Wi-Fi 码显示网络名和密码；名片码保存为 .vcf；没写协议的网址自动补全；中文名更新为「QR Right-Click · 右键扫码」。
+1.4 — 首次上架：右键识别网页二维码，链接直接打开、文本复制，支持多码场景，中英文界面，工具栏弹窗。
 ```
 
 ### 类别 Category
