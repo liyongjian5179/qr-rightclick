@@ -44,7 +44,7 @@ PRIVATE BY DESIGN
 
 Available in English and Chinese, with a one-click language switch in the toolbar popup.
 
-Like it? You can buy me a coffee from the toolbar popup. The extension is completely free.
+Like it? You can buy me a coffee from the toolbar popup, or at ko-fi.com/liyongjian5179. The extension is completely free.
 
 Changelog
 1.7 — Results now appear as a light toast instead of a blocking dialog; URLs without a scheme are filled in automatically; new Chinese display name.
@@ -81,7 +81,7 @@ Changelog
 
 支持中英文，可在工具栏弹窗里一键切换语言。
 
-觉得好用的话，可以在工具栏弹窗里请作者喝杯咖啡。扩展完全免费。
+觉得好用的话，可以在工具栏弹窗里请作者喝杯咖啡。扩展完全免费。海外用户可用 Ko-fi：ko-fi.com/liyongjian5179
 
 更新记录
 1.7 — 识别结果改为轻量提示条，不再弹阻塞式对话框；没写协议的网址自动补全；中文名更新为「QR Right-Click · 右键扫码」。

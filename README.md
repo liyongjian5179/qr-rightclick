@@ -11,6 +11,7 @@ English | [简体中文](README.zh-CN.md)
 [![jsQR](https://img.shields.io/badge/Decoder-jsQR%201.4.0-000000?style=flat-square)](https://github.com/cozmo/jsQR)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20local-blueviolet?style=flat-square)](#-privacy)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/liyongjian5179)
 
 Scan QR codes on any web page from the native right-click menu. Links open in a new tab; text is copied to your clipboard.<br>
 Decoding runs locally. **No images are uploaded.**

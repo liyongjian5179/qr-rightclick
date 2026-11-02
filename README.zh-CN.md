@@ -11,6 +11,7 @@
 [![jsQR](https://img.shields.io/badge/解码-jsQR%201.4.0-000000?style=flat-square)](https://github.com/cozmo/jsQR)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Privacy](https://img.shields.io/badge/隐私-纯本地离线-blueviolet?style=flat-square)](#-隐私)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-%E8%AF%B7%E5%96%9D%E6%9D%AF%E5%92%96%E5%95%A1-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/liyongjian5179)
 
 原生右键菜单识别网页二维码 —— 是链接就新开标签，是文本就复制剪贴板。<br>
 纯本地解码，**不上传任何图片**。
