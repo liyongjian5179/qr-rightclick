@@ -47,7 +47,8 @@ Available in English and Chinese, with a one-click language switch in the toolba
 Like it? You can buy me a coffee from the toolbar popup. The extension is completely free.
 
 Changelog
-1.7 — Results now appear as a light toast instead of a blocking dialog; Wi-Fi codes show the network and password; contact cards save as .vcf; URLs without a scheme are filled in automatically; new Chinese display name.
+1.7 — Results now appear as a light toast instead of a blocking dialog; URLs without a scheme are filled in automatically; new Chinese display name.
+1.5 — Wi-Fi codes show the network name and password; contact cards save as .vcf; WeChat / Alipay / official-account codes get a clear hint; email links open in your mail client.
 1.4 — First public release: right-click any QR code to open its link or copy its text, with multi-code detection, English and Chinese UI, and a toolbar popup.
 ```
 
@@ -83,7 +84,8 @@ Changelog
 觉得好用的话，可以在工具栏弹窗里请作者喝杯咖啡。扩展完全免费。
 
 更新记录
-1.7 — 识别结果改为轻量提示条，不再弹阻塞式对话框；Wi-Fi 码显示网络名和密码；名片码保存为 .vcf；没写协议的网址自动补全；中文名更新为「QR Right-Click · 右键扫码」。
+1.7 — 识别结果改为轻量提示条，不再弹阻塞式对话框；没写协议的网址自动补全；中文名更新为「QR Right-Click · 右键扫码」。
+1.5 — Wi-Fi 码显示网络名和密码，密码自动复制；名片码保存为 .vcf；微信 / 支付宝 / 公众号码给出明确提示；邮件链接交给系统邮件客户端。
 1.4 — 首次上架：右键识别网页二维码，链接直接打开、文本复制，支持多码场景，中英文界面，工具栏弹窗。
 ```
 
