@@ -8,11 +8,11 @@
     "description": "Extension description (English)"
   },
   "menuScan": {
-    "message": "Scan QR code & open link",
+    "message": "Scan QR code",
     "description": "Context menu item"
   },
   "popupUsage": {
-    "message": "Right-click a QR code on any page and choose “Scan QR code & open link”. Links open in a new tab; text is copied to the clipboard.",
+    "message": "Right-click a QR code → “Scan QR code”\nLinks open in a new tab · text is copied to your clipboard",
     "description": "Popup usage hint"
   },
   "popupDonateTitle": {
@@ -20,7 +20,7 @@
     "description": "Popup donate section title"
   },
   "popupDonateHint": {
-    "message": "If this extension saves you time, consider supporting it.",
+    "message": "If it saves you time, buy the author a coffee",
     "description": "Popup donate hint"
   },
   "popupWechat": {
@@ -94,5 +94,9 @@
   "vcardSaved": {
     "message": "Contact card saved: {name}",
     "description": "Contact card saved message. {name} is replaced with the contact name"
+  },
+  "popupRate": {
+    "message": "Rate it",
+    "description": "Footer link to the Chrome Web Store reviews page"
   }
 }

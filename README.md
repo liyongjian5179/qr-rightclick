@@ -24,7 +24,7 @@ Decoding runs locally. **No images are uploaded.**
 
 | Feature | Description |
 |:---|:---|
-| 🖱️ Native context menu | Right-click a QR code → `Scan QR code & open link` |
+| 🖱️ Native context menu | Right-click a QR code → `Scan QR code` |
 | 🔗 Smart handling | http/https links open in a new tab; other text is copied to the clipboard |
 | 🧩 Works everywhere | Image QR codes, canvas pop-ups, CSS background images, Shadow DOM |
 | 🎯 Picks the right code | When several QR codes sit side by side, only the one you right-clicked is decoded |
@@ -59,7 +59,7 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
  Right-click a visible QR code
               │
               ▼
-  Scan QR code & open link
+  Scan QR code
               │
         ┌─────┴─────┐
         ▼           ▼

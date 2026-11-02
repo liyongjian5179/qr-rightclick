@@ -29,7 +29,7 @@ body {
 header { display: flex; gap: 10px; align-items: center; }
 header img { border-radius: 7px; }
 h1 { margin: 0; font-size: 15px; }
-.ver { margin: 0; color: var(--muted); font-size: 12px; }
+.ver { color: var(--muted); font-size: 12px; }
 
 .lang {
   margin-left: auto;
@@ -46,18 +46,19 @@ h1 { margin: 0; font-size: 15px; }
 .lang:hover { color: var(--fg); border-color: var(--muted); }
 
 .usage {
-  margin: 12px 0;
+  margin: 12px 0 14px;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  white-space: pre-line;
 }
 
 .donate { border-top: 1px solid var(--line); padding-top: 12px; }
 h2 { margin: 0; font-size: 13px; }
 .hint { margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
 
-.qr-row { display: flex; gap: 12px; }
-figure { flex: 1; margin: 0; text-align: center; }
+.qr-row { display: flex; gap: 16px; justify-content: center; }
+figure { width: 108px; margin: 0; text-align: center; }
 /* 收款码固定白底，深色模式下手机也能扫 */
 figure img {
   display: block;
@@ -82,8 +83,15 @@ figcaption { margin-top: 4px; color: var(--muted); font-size: 12px; }
   text-decoration: none;
 }
 
-footer { margin-top: 12px; text-align: right; font-size: 12px; }
+footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12px;
+}
 footer a { color: var(--muted); }
+footer .ver { margin-left: auto; }
 
 .result {
   margin: -4px 0 12px;

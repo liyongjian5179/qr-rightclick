@@ -20,7 +20,7 @@
 ```
 Scan QR codes on any web page without reaching for your phone.
 
-Right-click a QR code and choose "Scan QR code & open link":
+Right-click a QR code and choose "Scan QR code":
 • Links open in a new tab right away
 • Wi-Fi codes show the network name and password (password copied for you)
 • Contact cards save as a .vcf file you can import
@@ -57,7 +57,7 @@ Changelog
 ```
 不用掏手机，直接识别网页上的二维码。
 
-在二维码上右键，选择「识别二维码并打开链接」：
+在二维码上右键，选择「识别二维码」：
 • 链接直接新开标签打开
 • Wi-Fi 码直接显示网络名和密码，密码自动复制
 • 名片码保存为 .vcf 文件，可直接导入通讯录
@@ -120,7 +120,7 @@ Decode a QR code that the user right-clicks on a web page, then open the link in
 
 **contextMenus**
 ```
-Adds the "Scan QR code & open link" item to the right-click menu. This is the only way the user starts a scan.
+Adds the "Scan QR code" item to the right-click menu. This is the only way the user starts a scan.
 ```
 
 **scripting**
@@ -130,7 +130,7 @@ After a scan, injects a small function into the current tab to copy the decoded 
 
 **Host permission (<all_urls>)**
 ```
-QR codes can appear on any website, so the extension needs access to all sites to (1) capture the visible tab with chrome.tabs.captureVisibleTab when the user right-clicks a QR code drawn on a canvas or CSS background, and (2) fetch the right-clicked image so it can be decoded even when the site blocks cross-origin reads. Both happen only after the user chooses "Scan QR code & open link". The screenshot and image are decoded locally in memory and discarded. Nothing is uploaded.
+QR codes can appear on any website, so the extension needs access to all sites to (1) capture the visible tab with chrome.tabs.captureVisibleTab when the user right-clicks a QR code drawn on a canvas or CSS background, and (2) fetch the right-clicked image so it can be decoded even when the site blocks cross-origin reads. Both happen only after the user chooses "Scan QR code". The screenshot and image are decoded locally in memory and discarded. Nothing is uploaded.
 ```
 
 **Content script on all pages (content.js)**（如果有单独的说明栏）

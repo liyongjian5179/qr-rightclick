@@ -12,8 +12,8 @@ The extension does not collect, store, sell, or transmit any personal data. QR c
 
 | Data | When | Purpose | Leaves your device? |
 |---|---|---|---|
-| Screenshot of the visible tab | Only after you choose **Scan QR code & open link** | Decode a QR code drawn on a canvas, set as a CSS background, or inside Shadow DOM | No. Decoded in memory and discarded |
-| The image you right-clicked | Only after you choose **Scan QR code & open link** on an image | Decode the QR code in that image. The extension re-requests the image from its original address, usually served from the browser cache | No data is sent anywhere except the normal request back to the image's own server |
+| Screenshot of the visible tab | Only after you choose **Scan QR code** | Decode a QR code drawn on a canvas, set as a CSS background, or inside Shadow DOM | No. Decoded in memory and discarded |
+| The image you right-clicked | Only after you choose **Scan QR code** on an image | Decode the QR code in that image. The extension re-requests the image from its original address, usually served from the browser cache | No data is sent anywhere except the normal request back to the image's own server |
 | Right-click position on the page | Each time you right-click (kept in the page's memory only) | Decode only the QR code under your cursor when several are on screen | No. Not stored or transmitted |
 | Decoded QR content | After decoding | Open it in a new tab (links) or copy it to your clipboard (text) | No. Not stored or transmitted |
 | Popup language preference | When you switch language in the popup | Remember your choice | No. Stored locally in the extension |
@@ -23,7 +23,7 @@ The extension does **not** read page text, form fields, passwords, cookies, brow
 ## Permissions
 
 - **`<all_urls>` (host permission)**: needed to capture the visible tab and fetch the right-clicked image on any site, so QR codes can be decoded wherever you find them.
-- **`contextMenus`**: adds the **Scan QR code & open link** item to the right-click menu.
+- **`contextMenus`**: adds the **Scan QR code** item to the right-click menu.
 - **`scripting`**: shows the result on the page (copy the text and display a notice), and reads the right-click position recorded by the extension's own content script.
 
 ## Third parties
@@ -42,13 +42,13 @@ Questions? Open an issue at https://github.com/liyongjian5179/qr-rightclick/issu
 
 ---
 
-# 隐私政策 — 极简右键扫码打开
+# 隐私政策 — QR Right-Click · 右键扫码
 
 _最后更新：2026-10-30_
 
 本扩展不收集、不存储、不出售、不传输任何个人数据。二维码完全在你的设备上解码。
 
-- **截屏**：只在你点击「识别二维码并打开链接」后截取当前可见页面，用于识别 Canvas、CSS 背景图、Shadow DOM 中的二维码。截图只在内存中处理，用完即丢弃。
+- **截屏**：只在你点击「识别二维码」后截取当前可见页面，用于识别 Canvas、CSS 背景图、Shadow DOM 中的二维码。截图只在内存中处理，用完即丢弃。
 - **右键的图片**：只在你对图片使用本功能时，从图片原地址重新获取一次（通常直接命中浏览器缓存），不会发往其他地址。
 - **右键位置**：每次右键时记录在页面内存中，用于多个二维码时判断你点的是哪个，不存储、不上传。
 - **识别结果**：链接直接新开标签，文本复制到剪贴板，不存储、不上传。
