@@ -6,6 +6,7 @@
 
 English | [简体中文](README.zh-CN.md)
 
+[![Chrome Web Store](https://img.shields.io/badge/Install-Chrome%20Web%20Store-1a7f37?style=flat-square&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/qr-right-click/dgmgfomdlmjpeoeoklilnfgenbngplee)
 [![Chrome](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate)
 [![jsQR](https://img.shields.io/badge/Decoder-jsQR%201.4.0-000000?style=flat-square)](https://github.com/cozmo/jsQR)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
@@ -30,7 +31,13 @@ Decoding runs locally. **No images are uploaded.**
 | 💬 Never in your way | Results appear as a small toast in the corner and fade out on their own — no blocking dialogs |
 | 🔒 Local decoding | jsQR runs on your machine. No uploads, no tracking, no clutter |
 
-## 🚀 Install (about 30 seconds)
+## 🚀 Install
+
+**[Add to Chrome from the Chrome Web Store](https://chromewebstore.google.com/detail/qr-right-click/dgmgfomdlmjpeoeoklilnfgenbngplee)**
+
+Works in Chrome and other Chromium browsers that support the Web Store.
+
+### Manual install (development)
 
 ```bash
 git clone https://github.com/liyongjian5179/qr-rightclick.git
@@ -42,6 +49,8 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 4. Done ✅ Refresh any open page to start using it
 
 > You can also download the ZIP from [Releases](https://github.com/liyongjian5179/qr-rightclick/releases), unzip it, and load it the same way.
+>
+> The store build and a self-built ZIP have different extension IDs, so they can't be upgraded into each other — pick one and stick with it.
 
 ## 📖 Usage
 

@@ -6,6 +6,7 @@
 
 [English](README.md) | 简体中文
 
+[![Chrome Web Store](https://img.shields.io/badge/安装-Chrome%20应用商店-1a7f37?style=flat-square&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/qr-right-click/dgmgfomdlmjpeoeoklilnfgenbngplee)
 [![Chrome](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate)
 [![jsQR](https://img.shields.io/badge/解码-jsQR%201.4.0-000000?style=flat-square)](https://github.com/cozmo/jsQR)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
@@ -30,7 +31,13 @@
 | 💬 不打断你 | 结果以右上角轻量提示条显示，几秒后自动消失，不再弹阻塞式对话框 |
 | 🔒 纯本地解码 | jsQR 本地运行，不上传、无埋点、无多余界面 |
 
-## 🚀 安装（约 30 秒）
+## 🚀 安装
+
+**[从 Chrome 应用商店安装](https://chromewebstore.google.com/detail/qr-right-click/dgmgfomdlmjpeoeoklilnfgenbngplee)**（推荐，一键安装、自动更新）
+
+Chrome 及其他支持应用商店的 Chromium 浏览器均可使用。
+
+### 手动安装（开发调试用）
 
 ```bash
 git clone https://github.com/liyongjian5179/qr-rightclick.git
@@ -41,7 +48,9 @@ git clone https://github.com/liyongjian5179/qr-rightclick.git
 3. 点击 **加载已解压的扩展程序**，选中 `qr-rightclick` 文件夹
 4. 完成 ✅ 刷新网页即可使用
 
-> 也支持直接下载 ZIP 解压后加载，效果相同。
+> 也可以从 [Releases](https://github.com/liyongjian5179/qr-rightclick/releases) 下载 ZIP 解压后加载。
+>
+> 注意：商店版和本地自建包的扩展 ID 不同，两者不能互相升级，选一种用到底。
 
 ## 📖 使用方式
 
